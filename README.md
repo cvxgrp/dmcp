@@ -4,7 +4,7 @@ DMCP
 A multi-convex optimization problem is one in which the variables can be partitioned into sets over each of which the problem is convex when the other variables are fixed.
 It is generally a nonconvex problem.
 DMCP package provides methods to verify multi-convexity and to find minimal sets of variables that have to be fixed for a problem to be convex, as well as an organized heuristic for multi-convex programming.
-The full details of our approach are discussed in [http://stanford.edu/~boyd/papers/dmcp.html]. DMCP is built on top of [CVXPY](http://www.cvxpy.org/), a domain-specific language for convex optimization embedded in Python.
+The full details of our approach are discussed in [the associated paper](http://stanford.edu/~boyd/papers/dmcp.html). DMCP is built on top of [CVXPY](http://www.cvxpy.org/), a domain-specific language for convex optimization embedded in Python.
 
 Installation
 ------------
