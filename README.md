@@ -8,7 +8,7 @@ The full details of our approach are discussed in [the associated paper](http://
 
 Installation
 ------------
-You should first install [CVXPY](http://ww.cvxpy.org/), following the instructions [here](http://www.cvxpy.org/en/latest/install/index.html).
+You should first install [CVXPY](https://github.com/cvxgrp/cvxpy/tree/feature/dccp) from its feature/dccp branch.
 
 DMCP rules
 ----------
