@@ -3,23 +3,24 @@ DMCP
 ====
 A multi-convex optimization problem is one in which the variables can be partitioned into sets over each of which the problem is convex when the other variables are fixed.
 It is generally a nonconvex problem.
-DMCP package provides a method to verify multi-convexity and find minimal sets of variables that have to be fixed for a problem to be convex, as well as an organized heuristic for multi-convex programming.
-The full details of our approach are discussed in [the associated paper]. DMCP is built on top of [CVXPY](http://www.cvxpy.org/), a domain-specific language for convex optimization embedded in Python.
+DMCP package provides methods to verify multi-convexity and to find minimal sets of variables that have to be fixed for a problem to be convex, as well as an organized heuristic for multi-convex programming.
+The full details of our approach are discussed in [the associated paper](http://stanford.edu/~boyd/papers/dmcp.html). DMCP is built on top of [CVXPY](http://www.cvxpy.org/), a domain-specific language for convex optimization embedded in Python.
 
 Installation
 ------------
-You should first install [CVXPY](http://ww.cvxpy.org/), following the instructions [here](http://www.cvxpy.org/en/latest/install/index.html).
+You should first install [CVXPY](https://github.com/cvxgrp/cvxpy/tree/feature/dccp) from its feature/dccp branch.
 
 DMCP rules
 ----------
-
+Consider an optimization problem
 ```
 minimize    f_0(x) 
-subject to  f_i(x) <= 0, i = 1,..., m
-            g_i(x) = 0, i = 1,..., p,
+subject to  f_i(x) <= 0, i = 1,...,m
+            g_i(x) = 0, i = 1,...,p,
 ```
 where variable ``x`` admits a partition of blocks of variables ``x = (x_1,...,x_N)``, and functions ``f_i`` for ``i = 0,...,m`` and ``g_i`` for ``i = 1,...,p`` are proper.
-The problem can be specified as disciplined multi-convex programming (DMCP), if there are index sets ``F_1,..., F_K``, such that their intersection is empty, and for every ``k`` the problem with variables ``x_i`` for all ``i`` in set ``F_k`` fixed to any value can be specified as DCP.
+Given a set of DCP atomic functions and its extension of multi-convex atomic functions,
+the problem can be specified as disciplined multi-convex programming (DMCP), if there are index sets ``F_1,..., F_K``, such that their intersection is empty, and for every ``k`` the problem with variables ``x_i`` for all ``i`` in set ``F_k`` fixed to any value can be specified as DCP with respect to the DCP atoms set.
 
 Example
 -------
@@ -81,8 +82,8 @@ Constructing and solving problems
 ---------------------------------
 The components of the variable, the objective, and the constraints are constructed using standard CVXPY syntax. Once the user has constructed a problem object, they can apply the following solve method:
 * ``problem.solve(method = 'dmcp')`` applies the solving algorithm with proximal operators, and returns the number of iterations, and the maximum value of the slack variables. The solution to every variable is in its ``value`` field.
-* ``problem.solve(method = 'dmcp', proximal = False)`` applies the solving method without proximal operators.
-* ``problem.solve(method = 'dmcp', linearize = True)`` applies the solving method with prox-linear operators.
+* ``problem.solve(method = 'dmcp', update = 'minimize')`` applies the solving method without proximal operators.
+* ``problem.solve(method = 'dmcp', update = 'prox_linear')`` applies the solving method with prox-linear operators.
 
 Additional arguments can be used to specify the parameters.
 
