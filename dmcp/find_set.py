@@ -8,7 +8,7 @@ def find_minimal_sets(prob):
     """
     find all minimal sets of a problem
     :param prob: a problem
-    :return: result: a list of minimal sets,
+    :return: result: the list of all minimal sets,
     each is a set of indexes of variables in prob.variables()
     """
     if prob.is_dcp():
@@ -46,11 +46,11 @@ def find_maxset_graph(prob):
         t = search_conflict(con.args[0] + con.args[1],t,varid) # search conflicts in each constraint
     #if not sum(np.diag(t)) == 0: # graph has self-loop <=> not dmcp
     #    return None
-    return find_all_MIS(prob.variables(), t, prob)
+    return find_MIS(prob.variables(), t, prob)
 
-def find_all_MIS(V,g,prob):
+def find_MIS(V,g,prob):
     """
-    find all maximal independent sets of a graph
+    find maximal independent sets of a graph until all vertices are included
     :param g: graph
     :param V: set of all vertices
     :return: a list of maximal independent sets
@@ -59,7 +59,7 @@ def find_all_MIS(V,g,prob):
     subsets_len = [len(subset) for subset in i_subsets]
     sort_idx = np.argsort(subsets_len) # sort the subsets by card
     result = []
-    #U = [] # union of all collected vars
+    U = [] # union of all collected vars
     for count in range(1,len(sort_idx)+1): # collecting from the subsets with largest card
         flag = 1
         for subs in result:
@@ -71,10 +71,12 @@ def find_all_MIS(V,g,prob):
             fix_set = [var for var in prob.variables() if var.id not in set_id]
             if fix_prob(prob, fix_set).is_dcp():
                 result.append(i_subsets[sort_idx[-count]])
-                #U = union(U, i_subsets[sort_idx[-count]])
+                U = union(U, i_subsets[sort_idx[-count]])
+                print [var.id for var in U]
             #else:
             #    return None
-    #if is_subset(V,U): # the collected vars cover all vars
+        if is_subset(V,U): # the collected vars cover all vars
+            break
     return result
     #else:
     #    return None

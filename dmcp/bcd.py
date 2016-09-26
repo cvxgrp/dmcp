@@ -2,6 +2,7 @@ __author__ = 'Xinyue'
 
 from cvxpy import *
 from examples.extensions.dmcp.dmcp.dmcp.find_set import find_minimal_sets
+
 from examples.extensions.dmcp.dmcp.dmcp.fix import fix
 from examples.extensions.dmcp.dmcp.dmcp.initial import rand_initial
 import cvxpy as cvx
