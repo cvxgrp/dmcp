@@ -2,7 +2,6 @@ __author__ = 'Xinyue'
 
 from cvxpy import *
 from examples.extensions.dmcp.dmcp.dmcp.find_set import find_minimal_sets
-
 from examples.extensions.dmcp.dmcp.dmcp.fix import fix
 from examples.extensions.dmcp.dmcp.dmcp.initial import rand_initial
 import cvxpy as cvx
@@ -73,18 +72,6 @@ def bcd(prob, max_iter = 100, solver = 'SCS', mu = 5e-3, rho = 1.5, mu_max = 1e5
         print "maximum value of slack variables:", result[1]
         print "objective value:", prob.objective.value
         return result
-    #if result_temp is None:
-    #    return None
-    #if (prob.objective.NAME == 'minimize' and prob.objective.value<cost_value) \
-    #    or (prob.objective.NAME == 'maximize' and prob.objective.value>cost_value): # find a better cost value
-    #        result = result_temp # update the result
-    #        cost_value = prob.objective.value # update the record on the best cost value
-    #        var_solution = [] # store the new solution
-    #        for var in prob.variables():
-    #            var_solution.append(var.value)
-    #if var_solution is not None:
-    #    for idx, var in enumerate(prob.variables()):
-    #        var.value = var_solution[idx]
 
 def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, proximal):
     """

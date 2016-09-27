@@ -3,64 +3,54 @@ __author__ = 'Xinyue'
 from fix import fix
 from fix import fix_prob
 import numpy as np
+from cvxpy.expressions.leaf import Leaf
+from cvxpy import *
 
 def find_minimal_sets(prob):
     """
-    find all minimal sets of a problem
+    find minimal sets to fix
     :param prob: a problem
-    :return: result: the list of all minimal sets,
+    :return: result: the list of minimal sets,
     each is a set of indexes of variables in prob.variables()
     """
     if prob.is_dcp():
         return []
-    maxsets = find_maxset_graph(prob)
-    #if maxsets is None:
-    #    return [[i for i in range(len(prob.variables()))]]
-    #else:
+    maxsets = find_MIS(prob)
     result = []
+    V = prob.variables()
     for maxset in maxsets:
         maxset_id = [var.id for var in maxset]
-        fix_id = [var.id for var in prob.variables() if var.id not in maxset_id]
-        prob_var_id = [var.id for var in prob.variables()]
+        fix_id = [var.id for var in V if var.id not in maxset_id]
+        prob_var_id = [var.id for var in V]
         fix_idx = [prob_var_id.index(varid) for varid in fix_id]
-        print fix_id, fix_idx
         result.append(fix_idx)
     return result
 
-
-def find_maxset_graph(prob):
+def find_MIS(prob):
     """
-    Analyze a problem by a graph to find maximum subsets of variables,
-    so that the problem is dcp in each subset
-    :param prob: Problem
-    :return: a list of subsets of Variables
+    find maximal independent sets of a graph until all vertices are included
+    :param prob: a problem
+    :return: a list of maximal independent sets
     """
     if prob.is_dcp():
         return [prob.variables()]
     # graph of conflict vars
-    node_num = len(prob.variables())
-    t = np.zeros((node_num,node_num)) # table of edges
-    varid = [var.id for var in prob.variables()]
-    t = search_conflict(prob.objective.args[0],t,varid) # search conflicts in objective function
+    V = prob.variables()
+    node_num = len(V)
+    g = np.zeros((node_num,node_num)) # table of edges
+    varid = [var.id for var in V]
+    stack, g = search_conflict_l(prob.objective.args[0],[],varid,g)
     for con in prob.constraints:
-        t = search_conflict(con.args[0] + con.args[1],t,varid) # search conflicts in each constraint
-    #if not sum(np.diag(t)) == 0: # graph has self-loop <=> not dmcp
-    #    return None
-    return find_MIS(prob.variables(), t, prob)
-
-def find_MIS(V,g,prob):
-    """
-    find maximal independent sets of a graph until all vertices are included
-    :param g: graph
-    :param V: set of all vertices
-    :return: a list of maximal independent sets
-    """
+        stack, g = search_conflict_l(con.args[0] + con.args[1],[],varid,g)
+    # find all independent sets of the conflict graph
     i_subsets = find_all_iset(V,g)
+    # sort all independent sets
     subsets_len = [len(subset) for subset in i_subsets]
     sort_idx = np.argsort(subsets_len) # sort the subsets by card
+    # check all sorted sets
     result = []
     U = [] # union of all collected vars
-    for count in range(1,len(sort_idx)+1): # collecting from the subsets with largest card
+    for count in range(1,len(sort_idx)+1): # collecting from a subset with the largest cardinality
         flag = 1
         for subs in result:
             if is_subset(i_subsets[sort_idx[-count]], subs): # the current one is a subset of a previously collected one
@@ -68,19 +58,14 @@ def find_MIS(V,g,prob):
                 break
         if flag:
             set_id = [var.id for var in i_subsets[sort_idx[-count]]]
-            fix_set = [var for var in prob.variables() if var.id not in set_id]
+            fix_set = [var for var in V if var.id not in set_id]
             if fix_prob(prob, fix_set).is_dcp():
                 result.append(i_subsets[sort_idx[-count]])
                 U = union(U, i_subsets[sort_idx[-count]])
                 print [var.id for var in U]
-            #else:
-            #    return None
-        if is_subset(V,U): # the collected vars cover all vars
-            break
+        #if is_subset(V,U): # the collected vars cover all vars
+        #    break
     return result
-    #else:
-    #    return None
-
 
 def find_all_iset(V,g):
     """
@@ -128,6 +113,43 @@ def find_all_subsets(s):
         subsets.append(set)
     return subsets
 
+def search_conflict_l(expr,stack,V,t):
+    '''
+    search conflict variables in an expression using lists
+    :param expr: an expression
+    :param stack: stack of lists
+    :param V: a list of id numbers of variables
+    :param t: graph
+    :return:
+    '''
+    if isinstance(expr,Leaf):
+        if isinstance(expr,Variable):
+            stack.append([expr.id])
+        else:
+            stack.append([])
+    else:
+        args_num = 0 # number of arguments
+        for arg in expr.args:
+            stack,t = search_conflict_l(arg,stack,V,t)
+            args_num += 1
+        if not expr.is_atom_multiconvex():        # at a convex node
+            while args_num>1:
+                stack[-2] = stack[-1] + stack[-2] # merge lists of its arguments
+                args_num -= 1
+                stack = stack[0:-1]
+        else:                                     # at a multi-convex node (with two arguments)
+            stack[-1] = list(set(stack[-1]))      # remove duplicates
+            stack[-2] = list(set(stack[-2]))
+            for i in range(len(V)):               # write conflict graph
+                if V[i] in stack[-1]:
+                    for j in range(len(V)):
+                         if V[j] in stack[-2]:
+                             t[i,j] = 1
+                             t[j,i] = 1
+            stack[-2] = stack[-1] + stack[-2]    # merge lists
+            stack = stack[0:-1]
+    return stack,t
+
 def search_conflict(expr,t,varid):
     """
     search conflict variables in an expression
@@ -138,11 +160,6 @@ def search_conflict(expr,t,varid):
     """
     for arg in expr.args:
         t = search_conflict(arg,t,varid)
-    #try:
-    #    op = expr.OP_NAME
-    #except AttributeError:
-    #    op = None
-    #if op == '*' and not expr.args[0].is_constant() and not expr.args[1].is_constant(): # multiplication of two vars
     if expr.is_atom_multiconvex() and not expr.args[0].is_constant() and not expr.args[1].is_constant():
         id1 = [var.id for var in expr.args[0].variables()] # var ids in left child node
         id2 = [var.id for var in expr.args[1].variables()]
@@ -188,7 +205,7 @@ def union(set1, set2):
 
 def find_maxset_prob(prob,vars,current=[]):
     """
-    Analyze a problem to find maximum subsets of variables,
+    Analyze a problem to find maximal subsets of variables,
     so that the problem is dcp restricting on each subset
     :param prob: Problem
     :return: a list of subsets of Variables, or None
@@ -221,7 +238,7 @@ def find_maxset_prob(prob,vars,current=[]):
 
 def find_dcp_maxset(expr,vars,current=[]):
     """
-    find maximum subsets of variables, so that expr is a dcp expression within each subset
+    find maximal subsets of variables, so that expr is a dcp expression within each subset
     :param expr: an expression
     :param vars: variables that are not fixed
     :param current: current list of subsets
@@ -258,7 +275,7 @@ def find_dcp_set(expr, vars):
     find subsets of variables, so that expr is a dcp expression within each subset
     :param expr:
     :param vars: variables that are not fixed
-    :return: a list of subsets of variables and each subset is a list, or None
+    :return: a list of lists of variables, or None
     """
     if vars == []:  # an empty list indicates that the expression is not multi-dcp
         return None
@@ -289,12 +306,10 @@ def is_subset(var_set1, var_set2):
         return True
     var_set1_id = [var.id for var in var_set1]
     var_set2_id = [var.id for var in var_set2]
-    flag = True
-    for var_1_id in var_set1_id:
-        if not var_1_id in var_set2_id:
-            flag = False
-            return flag
-    return flag
+    if len(var_set2_id) == len(list(set(var_set1_id + var_set2_id))):
+        return True
+    else:
+        return False
 
 def erase(vars,var):
     """
@@ -304,48 +319,3 @@ def erase(vars,var):
     :return: a set of variables
     """
     return [v for v in vars if v != var]
-
-'''
-def find_maxset2(prob):
-    if prob.is_dcp():
-        return [prob.variables()]
-    expr = prob.objective.args[0]
-    for con in prob.constraints:
-        expr += con.args[0]
-        expr += con.args[1]
-    return find_maxset_expr2(expr)
-'''
-'''
-def find_maxset_expr2(expr):
-    if isinstance(expr, Variable):
-        return [[expr]]
-    try:
-        op = expr.OP_NAME
-    except AttributeError:
-        op = None
-    if op == '*' and not expr.args[0].is_constant() and not expr.args[1].is_constant(): # a bi-convex node
-        list1 = find_maxset_expr2(expr.args[0])
-        list2 = find_maxset_expr2(expr.args[1])
-        if list1 is None or list2 is None:
-            return None
-        for set1 in list1:
-            for set2 in list2:
-                if is_intersect(set1, set2): # if any two sets intersect
-                    return None
-        return list1+list2
-    else: # a convex node
-        list1 = find_maxset_expr2(expr.args[0])
-        list2 = find_maxset_expr2(expr.args[1])
-        if list1 is None or list2 is None:
-            return None
-        result = []
-        t = np.zeros((len(list1), len(list2))) # table of indicator of intersection
-        for set1 in list1:
-            for set2 in list2:
-                if is_intersect(set1,set2):
-                    t[list1.index(set1),list2.index(set2)] = 1
-        #for set1 in list1:
-        #    for set2 in list2:
-
-        return result
-'''
