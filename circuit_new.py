@@ -1,8 +1,7 @@
 __author__ = 'Xinyue'
 
 import numpy as np
-from examples.extensions.dmcp.dmcp.dmcp import bcd
-from examples.extensions.dmcp.dmcp.dmcp.find_set import find_minimal_sets
+import dmcp
 from cvxpy import *
 
 np.random.seed(0)
@@ -53,10 +52,6 @@ constr += [x[0] == y[0]+z[0]]
 constr += [x[n-1]+z[n-2] == y[n-1]]
 
 prob = Problem(Minimize(cost), constr)
-
-for var in prob.variables():
-    print var.name()
-print find_minimal_sets(prob)
 
 prob.solve(method = 'bcd', ep = 1e-2)
 

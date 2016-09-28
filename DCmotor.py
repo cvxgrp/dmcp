@@ -2,7 +2,7 @@ __author__ = 'Xinyue'
 
 import numpy as np
 import matplotlib.pyplot as plt
-from examples.extensions.dmcp.dmcp.dmcp import bcd
+import dmcp
 from cvxpy import *
 
 np.random.seed(1)

@@ -1,0 +1,12 @@
+setup.py
+dmcp/__init__.py
+dmcp/bcd.py
+dmcp/find_set.py
+dmcp/fix.py
+dmcp/initial.py
+dmcp.egg-info/PKG-INFO
+dmcp.egg-info/SOURCES.txt
+dmcp.egg-info/dependency_links.txt
+dmcp.egg-info/not-zip-safe
+dmcp.egg-info/requires.txt
+dmcp.egg-info/top_level.txt

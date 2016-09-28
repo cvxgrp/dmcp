@@ -3,7 +3,7 @@ __author__ = 'Xinyue'
 from cvxpy import *
 import numpy as np
 import matplotlib.pyplot as plt
-from examples.extensions.dmcp.dmcp.dmcp import bcd
+import dmcp
 
 m = 10
 n = 20

@@ -6,32 +6,30 @@ import numpy as np
 from cvxpy.expressions.leaf import Leaf
 from cvxpy import *
 
-def find_minimal_sets(prob, is_all = True):
+def find_minimal_sets(prob):
     """
     find minimal sets to fix
     :param prob: a problem
-    :param is_all: to find all minimal sets or not
     :return: result: the list of minimal sets,
     each is a set of indexes of variables in prob.variables()
     """
     if prob.is_dcp():
         return []
-    maxsets = find_MIS(prob, is_all)
+    maxsets = find_MIS(prob)
     result = []
-    Vars = prob.variables()
+    V = prob.variables()
     for maxset in maxsets:
         maxset_id = [var.id for var in maxset]
-        fix_id = [var.id for var in Vars if var.id not in maxset_id]
-        V = [var.id for var in Vars]
-        fix_idx = [V.index(varid) for varid in fix_id]
+        fix_id = [var.id for var in V if var.id not in maxset_id]
+        prob_var_id = [var.id for var in V]
+        fix_idx = [prob_var_id.index(varid) for varid in fix_id]
         result.append(fix_idx)
     return result
 
-def find_MIS(prob, is_all):
+def find_MIS(prob):
     """
     find maximal independent sets of a graph until all vertices are included
     :param prob: a problem
-    :param is_all: to find all minimal sets or not
     :return: a list of maximal independent sets
     """
     if prob.is_dcp():
@@ -64,9 +62,9 @@ def find_MIS(prob, is_all):
             if fix_prob(prob, fix_set).is_dcp():
                 result.append(i_subsets[sort_idx[-count]])
                 U = union(U, i_subsets[sort_idx[-count]])
-        if not is_all:
-            if is_subset(V,U): # the collected vars cover all vars
-                break
+                print [var.id for var in U]
+        #if is_subset(V,U): # the collected vars cover all vars
+        #    break
     return result
 
 def find_all_iset(V,g):
@@ -175,35 +173,34 @@ def search_conflict(expr,t,varid):
 
 def is_intersect(set1, set2):
     """
-    if the intersection of set1 and set2 is nonempty
+    if the intersection of set1 and set2 is empty
     :param set1: a list of vars
     :param set2: a list of vars
     :return: boolean
     """
-    #id1 = [var.id for var in set1]
-    #id2 = [var.id for var in set2]
-    #flag = 0
-    #for id_1 in id1:
-    #    for id_2 in id2:
-    #        if id_1 == id_2:
-    #            flag = 1
-    #            return flag
-    #return flag
-    set1 = list(set(set1))
-    set2 = list(set(set2))
-    if len(set1)+len(set2) == len(list(set(set1+set2))):
-        return False
-    else:
-        return True
+    id1 = [var.id for var in set1]
+    id2 = [var.id for var in set2]
+    flag = 0
+    for id_1 in id1:
+        for id_2 in id2:
+            if id_1 == id_2:
+                flag = 1
+                return flag
+    return flag
 
 def union(set1, set2):
     """
     the union of set1 and set2
     :param set1: a list of vars
     :param set2: a list of vars
-    :return: a list of vars with no duplicates
+    :return: a list of vars
     """
-    return list(set(set1+set2))
+    result = set1
+    id1 = [var.id for var in set1]
+    for var in set2:
+        if not var.id in id1:
+            result.append(var)
+    return result
 
 
 def find_maxset_prob(prob,vars,current=[]):
@@ -307,9 +304,9 @@ def is_subset(var_set1, var_set2):
         return False
     if var_set1 == []:
         return True
-    var_set1 = list(set(var_set1)) #remove duplicates
-    var_set2 = list(set(var_set2))
-    if len(var_set2) == len(list(set(var_set1+ var_set2))):
+    var_set1_id = [var.id for var in var_set1]
+    var_set2_id = [var.id for var in var_set2]
+    if len(var_set2_id) == len(list(set(var_set1_id + var_set2_id))):
         return True
     else:
         return False

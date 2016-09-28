@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: dmcp
+Version: 0.1.3
+Summary: A CVXPY extension for multi-convex programs.
+Home-page: http://github.com/cvxgrp/dmcp/
+Author: Xinyue Shen, Steven Diamond, Stephen Boyd
+Author-email: xinyues@stanford.edu, diamond@cs.stanford.edu, boyd@stanford.edu
+License: GPLv3
+Description: UNKNOWN
+Platform: UNKNOWN

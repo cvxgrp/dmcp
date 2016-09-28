@@ -3,7 +3,7 @@ __author__ = 'Xinyue'
 import numpy as np
 import matplotlib.pyplot as plt
 from cvxpy import *
-from examples.extensions.dmcp.dmcp.dmcp.bcd import bcd
+import dmcp
 
 n = 10
 m = 15
@@ -20,7 +20,6 @@ B = Variable(n,m) # equalizer
 cost = sum_entries(square(B*C*A-I))/2 + square(sigma_e)*sum_entries(square(B))
 obj = Minimize(cost/(m*n))
 prob = Problem(obj, [norm(A,'fro')<=10])
-
 
 SNR = np.power(10,np.linspace(-2,1,20))
 sigma_e_value = np.sqrt(float(n)/2/m/SNR)
@@ -72,7 +71,7 @@ for value in sigma_e_value:
     # without proximal
     B.value = np.dot(np.dot(np.transpose(V), np.diag(float(1)/np.sqrt(S))), np.transpose(U))
     A.value = np.dot(np.dot(np.transpose(V), np.diag(float(1)/np.sqrt(S))), V)
-    iter, max_slack = bcd(prob, update = 'minimize', ep = 1e-4)
+    iter, max_slack = prob.solve(method = 'bcd', update = 'minimize', ep = 1e-4)
     print "======= solution ======="
     print "number of iterations =", iter+1
     print "objective =", cost.value

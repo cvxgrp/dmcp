@@ -2,7 +2,7 @@ __author__ = 'Xinyue'
 
 import numpy as np
 from cvxpy import *
-from examples.extensions.dmcp.dmcp.dmcp import bcd
+import dmcp
 
 n = 4
 m = 3
