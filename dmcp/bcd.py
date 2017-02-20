@@ -83,6 +83,7 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
     """
     obj_pre = np.inf
     for it in range(max_iter):
+        np.random.shuffle(fix_sets)
         #print "======= iteration", it, "======="
         for set in fix_sets:
             #fix_set = [var for var in prob.variables() if var.id in set]

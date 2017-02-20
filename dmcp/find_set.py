@@ -6,7 +6,7 @@ import numpy as np
 from cvxpy.expressions.leaf import Leaf
 from cvxpy import *
 
-def find_minimal_sets(prob, is_all = True):
+def find_minimal_sets(prob, is_all = False):
     """
     find minimal sets to fix
     :param prob: a problem

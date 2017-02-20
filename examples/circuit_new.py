@@ -53,7 +53,7 @@ constr += [x[n-1]+z[n-2] == y[n-1]]
 
 prob = Problem(Minimize(cost), constr)
 
-prob.solve(method = 'bcd', ep = 1e-2)
+prob.solve(method = 'bcd', ep = 1e-2, rho = 1.05, max_iter = 200)
 
 for k in range(n-1):
     print a[k].value, b[k].value, c[k].value
