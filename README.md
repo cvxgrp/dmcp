@@ -61,6 +61,8 @@ x_4.value = 0.15
 result = myprob.solve(method = 'dmcp')
 ```
 
+More examples can be found [here] (https://github.com/cvxgrp/dmcp/tree/master/examples).
+
 Multi-convex atomic functions
 -----------------------------
 In order to allow multi-convex functions, we extend the atomic function set of ``CVXPY``.
