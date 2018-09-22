@@ -6,7 +6,8 @@ import unittest
 import numpy as np
 import cvxpy as cvx
 import dmcp
-class bcdTest(unittest.TestCase):
+
+class bcdTestCases(unittest.TestCase):
     def setUp(self):
         '''
         Used to setup all the parameters of the tests.
