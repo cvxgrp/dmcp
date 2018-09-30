@@ -36,6 +36,7 @@ class bcdTestCases(BaseTest):
         '''
         Test the linearize function.
         '''
+
         #Define expression
         z = cvx.Variable((1,5))
         expr = cvx.square(z)
@@ -55,13 +56,15 @@ class bcdTestCases(BaseTest):
         Checks if the add slack function works.
         '''
 
-        #Define slack weight
-        mu = 5e-3
         #Define variables
         x1 = cvx.Variable()
         x2 = cvx.Variable()
         x3 = cvx.Variable()
         x4 = cvx.Variable()
+
+        #Define slack variable inputs
+        mu = 5e-3
+        slack = cvx.Variable()
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
@@ -72,9 +75,8 @@ class bcdTestCases(BaseTest):
         outputProb, slackList = bcd.add_slack(prob, mu)
 
         #Define slacked problem for testing
-        slack = cvx.Variable()
         objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) + mu*cvx.abs(slack))
-        constrTest = [x1*x2 + x3*x4 -1 == slack]
+        constrTest = [x1*x2 + x3*x4 - 1 == slack]
         probTest = cvx.Problem(objTest, constrTest)
 
         #Assertion Tests
