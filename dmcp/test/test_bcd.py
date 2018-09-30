@@ -13,10 +13,19 @@ class bcdTestCases(unittest.TestCase):
         Used to setup all the parameters of the tests.
         '''
     
-    def test_dmcp(self, prob):
+    def test_dmcp(self):
         '''
         Checks if a given problem (prob) is dmcp.
         '''
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
+
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1*x2 + x3*x4 == 1]
+        prob = cvx.Problem(obj, constr)
+        
 
     def test_linearize(self, expr):
         '''
