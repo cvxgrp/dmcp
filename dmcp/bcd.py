@@ -4,7 +4,7 @@ from __future__ import print_function
 
 __author__ = 'Xinyue'
 
-from cvxpy import *
+import cvxpy as cvx
 from dmcp.initial import rand_initial
 from dmcp.find_set import find_minimal_sets
 from dmcp.fix import fix

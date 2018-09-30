@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 __author__ = 'Xinyue'
-from cvxpy import *
+import cvxpy as cvx
 from cvxpy.expressions.expression import Expression
 
 def fix(obj, fix_vars):

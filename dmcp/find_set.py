@@ -8,7 +8,7 @@ from dmcp.fix import fix
 from dmcp.fix import fix_prob
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
-from cvxpy import *
+import cvxpy as cvx
 
 def find_minimal_sets(prob, is_all = False):
     """

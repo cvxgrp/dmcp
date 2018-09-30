@@ -35,7 +35,7 @@ class bcdTestCases(BaseTest):
         z = cvx.Variable((1,5))
         expr = cvx.square(z)
         z.value = np.reshape(np.array([1,2,3,4,5]), (1,5))
-        lin = linearize(expr)
+        lin = bcd.linearize(expr)
         self.assertEqual(lin.shape, (1,5))
         self.assertItemsAlmostEqual(lin.value, [1,4,9,16,25])
 

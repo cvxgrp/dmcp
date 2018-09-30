@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 __author__ = 'Xinyue'
-from cvxpy import *
+import cvxpy as cvx
 import numpy as np
 
 def rand_initial(prob):
