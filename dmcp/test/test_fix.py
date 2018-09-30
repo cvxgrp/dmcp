@@ -2,12 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import unittest
+from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
 import dmcp
 
-class fixTestCases(unittest.TestCase):
+class fixTestCases(BaseTest):
     def setUp(self):
         '''
         Used to setup all the parameters of the tests.

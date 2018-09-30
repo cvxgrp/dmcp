@@ -2,12 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import unittest
+from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
 import dmcp.bcd as bcd
 
-class bcdTestCases(unittest.TestCase):
+class bcdTestCases(BaseTest):
     def setUp(self):
         '''
         Used to setup all the parameters of the tests.
@@ -30,9 +30,16 @@ class bcdTestCases(unittest.TestCase):
 
     def test_linearize(self, expr):
         '''
-        Checks if the linearize function works on a given DMCP expression.
+        Test the linearize function.
         '''
+        z = cvx.Variable((1,5))
+        expr = cvx.square(z)
+        z.value = np.reshape(np.array([1,2,3,4,5]), (1,5))
+        lin = linearize(expr)
+        self.assertEqual(lin.shape, (1,5))
+        self.assertItemsAlmostEqual(lin.value, [1,4,9,16,25])
 
+        assert
     def test_slack(self, prob):
         '''
         Checks if the add slack function works.
