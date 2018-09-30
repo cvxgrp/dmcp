@@ -189,7 +189,7 @@ def proximal_op(prob, var_slack, lambd):
     """
     proximal operator of the objective
     :param prob: problem
-    :param var_slack: slack variables
+    :param var_slack: list of slack variables
     :param lambd: proximal operator parameter
     :return: a problem with proximal operator
     """

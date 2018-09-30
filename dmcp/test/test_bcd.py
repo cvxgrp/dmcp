@@ -32,6 +32,26 @@ class bcdTestCases(BaseTest):
         #Assertion test
         self.assertEqual(bcd.is_dmcp(prob), True)
 
+    def test_bcdSimple(self, prob):
+        '''
+        Checks if the solution method to solve the DMCP problem works to a simple problem.
+        '''
+
+    def test_bcdComplex(self, prob):
+        '''
+        Checks if the solution method to solve the DMCP problem works to a more complex problem.
+        '''
+
+    def test_bcdProximal(self, prob):
+        '''
+        Checks if the solution method to solve the DMCP problem works to a problem using proximal BCD.
+        '''
+
+    def test_block(self, prob):
+        '''
+        Checks if the block coordinate descent algorithm works.
+        '''
+
     def test_linearize(self):
         '''
         Test the linearize function.
@@ -51,7 +71,7 @@ class bcdTestCases(BaseTest):
         self.assertEqual(lin.shape, (1,5))
         self.assertItemsAlmostEqual(lin.value, [1,4,9,16,25])
 
-    def test_slack(self, prob):
+    def test_slack(self):
         '''
         Checks if the add slack function works.
         '''
@@ -74,7 +94,7 @@ class bcdTestCases(BaseTest):
         #Get slacked problem
         outputProb, slackList = bcd.add_slack(prob, mu)
 
-        #Define slacked problem for testing
+        #Define test slacked problem
         objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) + mu*cvx.abs(slack))
         constrTest = [x1*x2 + x3*x4 - 1 == slack]
         probTest = cvx.Problem(objTest, constrTest)
@@ -83,22 +103,33 @@ class bcdTestCases(BaseTest):
         self.assertEqual(len(slackList), 1)
         self.assertEqual(outputProb, probTest)
 
-    def test_proximal(self, prob):
+    def test_proximal(self):
         '''
         Checks if proximal objective function works.
         '''
 
-    def test_block(self, prob):
-        '''
-        Checks if the block coordinate descent algorithm works.
-        '''
+        #Define variables
+        x = cvx.Variable(4,1)
 
-    def test_bcdSimple(self, prob):
-        '''
-        Checks if the solution method to solve the DMCP problem works to a simple problem.
-        '''
+        #Define initialization
+        x.value = [1,1,0,0]
 
-    def test_bcdComplex(self, prob):
-        '''
-        Checks if the solution method to solve the DMCP problem works to a more complex problem.
-        '''
+        #Define slack variable inputs
+        lambd = 10
+        slack = cvx.Variable()
+
+        #Define problem
+        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
+        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        prob = cvx.Problem(obj, constr)
+
+        #Get proximal problem
+        outputProb = bcd.proximal_op(prob, [slack], lambd)
+
+        #Define test proximal slacked objective problem
+        objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + (1/(2*lambd))*cvx.square(cvx.norm(x - x.value, 'fro')))
+        constrTest = [x[0]*x[1] + x[2]*x[3] == 1]
+        probTest = cvx.Problem(objTest, constrTest)
+
+        #Assertion Test
+        self.assertEqual(prob, probTest)
