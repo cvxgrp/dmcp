@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 __author__ = 'Xinyue'
 from cvxpy import *
 from cvxpy.expressions.expression import Expression
@@ -14,7 +18,7 @@ def fix(obj, fix_vars):
     elif isinstance(obj,Problem):
         return fix_prob(obj,fix_vars)
     else:
-        print "wrong type to fix"
+        print("wrong type to fix")
 
 def fix_prob(prob, fix_var):
     """Fix the given variables in the problem.

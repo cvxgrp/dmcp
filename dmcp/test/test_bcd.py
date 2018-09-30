@@ -5,7 +5,7 @@ from __future__ import print_function
 import unittest
 import numpy as np
 import cvxpy as cvx
-import dmcp
+import dmcp.bcd as bcd
 
 class bcdTestCases(unittest.TestCase):
     def setUp(self):
@@ -26,6 +26,7 @@ class bcdTestCases(unittest.TestCase):
         constr = [x1*x2 + x3*x4 == 1]
         prob = cvx.Problem(obj, constr)
         
+        assert bcd.is_dmcp(prob) == True
 
     def test_linearize(self, expr):
         '''

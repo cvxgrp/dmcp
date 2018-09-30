@@ -1,7 +1,11 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 __author__ = 'Xinyue'
 
-from fix import fix
-from fix import fix_prob
+from dmcp.fix import fix
+from dmcp.fix import fix_prob
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
 from cvxpy import *
