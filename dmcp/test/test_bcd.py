@@ -135,4 +135,4 @@ class bcdTestCases(BaseTest):
         objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + (1/(2*lambd))*cvx.square(cvx.norm(x - x.value, 'fro')))
 
         #Assertion Test
-        self.assertEqual(prob.objective.value, objTest.value)
+        self.assertAlmostEqual(prob.objective.value, objTest.value)
