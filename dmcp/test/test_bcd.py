@@ -39,7 +39,6 @@ class bcdTestCases(BaseTest):
         self.assertEqual(lin.shape, (1,5))
         self.assertItemsAlmostEqual(lin.value, [1,4,9,16,25])
 
-        assert
     def test_slack(self, prob):
         '''
         Checks if the add slack function works.
