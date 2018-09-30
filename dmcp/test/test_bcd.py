@@ -94,14 +94,19 @@ class bcdTestCases(BaseTest):
         #Get slacked problem
         outputProb, slackList = bcd.add_slack(prob, mu)
 
-        #Define test slacked problem
+        #Define Initialization for Testing
+        x1.value = 1
+        x2.value = 1
+        x3.value = 0
+        x4.value = 0
+        slack.value = 1/(5e-3)
+
+        #Define ground truth for testing
         objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) + mu*cvx.abs(slack))
-        constrTest = [x1*x2 + x3*x4 - 1 == slack]
-        probTest = cvx.Problem(objTest, constrTest)
 
         #Assertion Tests
         self.assertEqual(len(slackList), 1)
-        self.assertEqual(outputProb, probTest)
+        self.assertAlmostEqual(outputProb.objective.value, objTest.value)
 
     def test_proximal(self):
         '''
@@ -111,12 +116,12 @@ class bcdTestCases(BaseTest):
         #Define variables
         x = cvx.Variable(4,1)
 
+        #Define slack variable inputs
+        lambd = 1/2
+        slack = cvx.Variable()
+
         #Define initialization
         x.value = [1,1,0,0]
-
-        #Define slack variable inputs
-        lambd = 10
-        slack = cvx.Variable()
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
@@ -126,10 +131,8 @@ class bcdTestCases(BaseTest):
         #Get proximal problem
         outputProb = bcd.proximal_op(prob, [slack], lambd)
 
-        #Define test proximal slacked objective problem
+        #Define ground truth test for proximal objective
         objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + (1/(2*lambd))*cvx.square(cvx.norm(x - x.value, 'fro')))
-        constrTest = [x[0]*x[1] + x[2]*x[3] == 1]
-        probTest = cvx.Problem(objTest, constrTest)
 
         #Assertion Test
-        self.assertEqual(prob, probTest)
+        self.assertEqual(prob.objective.value, objTest.value)
