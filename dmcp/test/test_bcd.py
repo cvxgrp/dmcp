@@ -43,6 +43,7 @@ class bcdTestCases(BaseTest):
         '''
         Checks if the add slack function works.
         '''
+        
 
     def test_proximal(self, prob):
         '''
