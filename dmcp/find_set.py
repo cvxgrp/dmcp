@@ -303,6 +303,7 @@ def find_dcp_set(expr, vars):
 
 def is_subset(var_set1, var_set2):
     """
+    Checks if var_set2 is a subset of var_set1
     :param var_set1: a list of variables
     :param var_set2: a list of variables
     :return: a boolean indicating if var_set1 is a subset of var_set2
