@@ -103,10 +103,13 @@ class bcdTestCases(BaseTest):
 
         #Define ground truth for testing
         objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) + mu*cvx.abs(slack))
+        constrTest = [x1*x2 + x3*x4 -1 == slack]
+        probTest = cvx.Problem(objTest, constrTest)        
 
         #Assertion Tests
         self.assertEqual(len(slackList), 1)
         self.assertAlmostEqual(outputProb.objective.value, objTest.value)
+        self.assertAlmostEqual(outputProb.constraints[0].violation(), probTest.constraints[0].violation())
 
     def test_proximal(self):
         '''
@@ -122,6 +125,7 @@ class bcdTestCases(BaseTest):
 
         #Define initialization
         x.value = [1,1,0,0]
+        slack.value = 1/(5e-3)
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
