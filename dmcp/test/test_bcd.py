@@ -23,7 +23,7 @@ class bcdTestCases(BaseTest):
         #Assertion test
         self.assertEqual(bcd.is_dmcp(prob), True)
 
-    def test_bcd(self):
+    def test_bcdProximal(self):
         '''
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
@@ -36,9 +36,47 @@ class bcdTestCases(BaseTest):
         prob = cvx.Problem(obj, constr)
 
         #Solve problem
-        prob.solve(method = 'bcd')
+        prob.solve(method = 'bcd', update = 'proximal')
 
-        #Asserion test
+        #Assertion test
+        self.assertAlmostEqual(prob.objective.value, 0, places = 3)
+        self.assertAlmostEqual(prob.constraints[0].violation(), 0)
+
+    def test_bcdMinimize(self):
+        '''
+        Checks if the solution method to solve the DMCP problem works to a simple problem.
+        '''
+        #Define variables
+        x = cvx.Variable(4,1)
+
+        #Define problem
+        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
+        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        prob = cvx.Problem(obj, constr)
+
+        #Solve problem
+        prob.solve(method = 'bcd', update = 'minimize')
+
+        #Assertion test
+        self.assertAlmostEqual(prob.objective.value, 0, places = 3)
+        self.assertAlmostEqual(prob.constraints[0].violation(), 0)
+
+    def test_bcdProxLinear(self):
+        '''
+        Checks if the solution method to solve the DMCP problem works to a simple problem.
+        '''
+        #Define variables
+        x = cvx.Variable(4,1)
+
+        #Define problem
+        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
+        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        prob = cvx.Problem(obj, constr)
+
+        #Solve problem
+        prob.solve(method = 'prox_linear')
+
+        #Assertion test
         self.assertAlmostEqual(prob.objective.value, 0, places = 3)
         self.assertAlmostEqual(prob.constraints[0].violation(), 0)
 
