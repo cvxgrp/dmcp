@@ -37,7 +37,7 @@ myprob = Problem(objective, constraint)
 print "minimal sets:", find_minimal_sets(myprob)   # find all minimal sets
 print "problem is DCP:", myprob.is_dcp()   # false
 print "problem is DMCP:", is_dmcp(myprob)  # true
-result = myprob.solve(method = 'dmcp')
+result = myprob.solve(method = 'bcd')
 ```
 The output of the above code is as follows.
 ```
@@ -58,7 +58,7 @@ x_1.value = 1.2
 x_2.value = -3
 x_3.value = 4
 x_4.value = 0.15
-result = myprob.solve(method = 'dmcp')
+result = myprob.solve(method = 'bcd')
 ```
 
 More examples can be found [here] (https://github.com/cvxgrp/dmcp/tree/master/examples).
@@ -82,9 +82,9 @@ The indexes are with respect to the list ``problem.variables()``, namely the var
 Constructing and solving problems
 ---------------------------------
 The components of the variable, the objective, and the constraints are constructed using standard CVXPY syntax. Once the user has constructed a problem object, they can apply the following solve method:
-* ``problem.solve(method = 'dmcp')`` applies the solving algorithm with proximal operators, and returns the number of iterations, and the maximum value of the slack variables. The solution to every variable is in its ``value`` field.
-* ``problem.solve(method = 'dmcp', update = 'minimize')`` applies the solving method without proximal operators.
-* ``problem.solve(method = 'dmcp', update = 'prox_linear')`` applies the solving method with prox-linear operators.
+* ``problem.solve(method = 'bcd')`` applies the solving algorithm with proximal operators, and returns the number of iterations, and the maximum value of the slack variables. The solution to every variable is in its ``value`` field.
+* ``problem.solve(method = 'bcd', update = 'minimize')`` applies the solving method without proximal operators.
+* ``problem.solve(method = 'bcd', update = 'prox_linear')`` applies the solving method with prox-linear operators.
 
 Additional arguments can be used to specify the parameters.
 

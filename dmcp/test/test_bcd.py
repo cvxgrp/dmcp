@@ -7,56 +7,45 @@ import numpy as np
 import cvxpy as cvx
 import dmcp.bcd as bcd
 
-class bcdTestCases(BaseTest):
-    def setUp(self):
-        '''
-        Used to setup all the parameters of the tests.
-        '''
-    
+class bcdTestCases(BaseTest):    
     def test_dmcp(self):
         '''
         Checks if a given problem (prob) is dmcp.
         '''
-
         #Define variables
-        x1 = cvx.Variable()
-        x2 = cvx.Variable()
-        x3 = cvx.Variable()
-        x4 = cvx.Variable()
+        x = cvx.Variable(4,1)
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
-        constr = [x1*x2 + x3*x4 == 1]
+        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
+        constr = [x[0]*x[1] + x[2]*x[3] == 1]
         prob = cvx.Problem(obj, constr)
         
         #Assertion test
         self.assertEqual(bcd.is_dmcp(prob), True)
 
-    def test_bcdSimple(self, prob):
+    def test_bcd(self):
         '''
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
+        #Define variables
+        x = cvx.Variable(4,1)
 
-    def test_bcdComplex(self, prob):
-        '''
-        Checks if the solution method to solve the DMCP problem works to a more complex problem.
-        '''
+        #Define problem
+        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
+        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        prob = cvx.Problem(obj, constr)
 
-    def test_bcdProximal(self, prob):
-        '''
-        Checks if the solution method to solve the DMCP problem works to a problem using proximal BCD.
-        '''
+        #Solve problem
+        prob.solve(method = 'bcd')
 
-    def test_block(self, prob):
-        '''
-        Checks if the block coordinate descent algorithm works.
-        '''
+        #Asserion test
+        self.assertAlmostEqual(prob.objective.value, 0, places = 3)
+        self.assertAlmostEqual(prob.constraints[0].violation(), 0)
 
     def test_linearize(self):
         '''
         Test the linearize function.
         '''
-
         #Define expression
         z = cvx.Variable((1,5))
         expr = cvx.square(z)
@@ -75,36 +64,29 @@ class bcdTestCases(BaseTest):
         '''
         Checks if the add slack function works.
         '''
-
         #Define variables
-        x1 = cvx.Variable()
-        x2 = cvx.Variable()
-        x3 = cvx.Variable()
-        x4 = cvx.Variable()
+        x = cvx.Variable(4,1)
 
         #Define slack variable inputs
         mu = 5e-3
         slack = cvx.Variable()
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
-        constr = [x1*x2 + x3*x4 == 1]
+        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
+        constr = [x[0]*x[1] + x[2]*x[3] == 1]
         prob = cvx.Problem(obj, constr)
 
         #Get slacked problem
         outputProb, slackList = bcd.add_slack(prob, mu)
 
-        #Define Initialization for Testing
-        x1.value = 1
-        x2.value = 1
-        x3.value = 0
-        x4.value = 0
-        slack.value = 1/(5e-3)
-
         #Define ground truth for testing
-        objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) + mu*cvx.abs(slack))
-        constrTest = [x1*x2 + x3*x4 -1 == slack]
+        objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + mu*cvx.abs(slack))
+        constrTest = [x[0]*x[1] + x[2]*x[3] - 1 == slack]
         probTest = cvx.Problem(objTest, constrTest)        
+
+        #Define Initialization for Testing
+        x.value = [1,1,0,0]
+        slack.value = 1/(5e-3)
 
         #Assertion Tests
         self.assertEqual(len(slackList), 1)
@@ -115,7 +97,6 @@ class bcdTestCases(BaseTest):
         '''
         Checks if proximal objective function works.
         '''
-
         #Define variables
         x = cvx.Variable(4,1)
 
@@ -139,4 +120,4 @@ class bcdTestCases(BaseTest):
         objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + (1/(2*lambd))*cvx.square(cvx.norm(x - x.value, 'fro')))
 
         #Assertion Test
-        self.assertAlmostEqual(prob.objective.value, objTest.value)
+        self.assertAlmostEqual(outputProb.objective.value, objTest.value)
