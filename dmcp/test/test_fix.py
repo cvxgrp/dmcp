@@ -5,7 +5,7 @@ from __future__ import print_function
 from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
-import dmcp
+from dmcp.fix import fix
 
 class fixTestCases(BaseTest):
     def setUp(self):
@@ -13,17 +13,50 @@ class fixTestCases(BaseTest):
         Used to setup all the parameters of the tests.
         '''
     
-    def test_fixObj(self, obj, fix_vars):
-        '''
-        Tests whether or not the fix variable function works for objects.
-        '''
-
-    def test_fixExpr(self, expr, fix_vars):
+    def test_fixExpr(self, obj, fix_vars):
         '''
         Tests whether or not the fix variable function works for expressions.
         '''
+        #Define variables
+        x1 = cvx.Variable()
+        x2 = cv2.Variable()
+        x3 = cv2.Variable()
+        x4 = cv2.Variable()
+
+        #Define expression
+        expr = cvx.abs(x1*x2 + x3*x4)
+
+        #Define fixed list
+        fix_vars = [x1, x3]
+
+        #Fix variables and get list of parameters
+        new_expr = fix(expr, fix_vars))
+        list_params = new_expr.parameters()
+
+        #Assertion test
+        self.assertEqual(len(list_params), len(fix_vars))
 
     def test_fixProb(self, prob, fix_vars):
         '''
         Tests whether or not the fix variable function works for problems/
         '''
+        #Define variables
+        x1 = cvx.Variable()
+        x2 = cv2.Variable()
+        x3 = cv2.Variable()
+        x4 = cv2.Variable()
+        
+        #Define problem
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1*x2 + x3*x4 == 1]
+        prob = cvx.Problem(obj, constr)
+
+        #Define fixed list
+        fix_vars = [x1, x3]
+
+        #Fix variables and get list of parameters
+        new_prob = fix(prob, fix_vars))
+        list_params = new_prob.parameters()
+
+        #Assertion test
+        self.assertEqual(len(list_params), len(fix_vars))
