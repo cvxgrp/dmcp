@@ -5,6 +5,7 @@ from __future__ import print_function
 __author__ = 'Xinyue'
 import cvxpy as cvx
 from cvxpy.expressions.expression import Expression
+from cvxpy.problems.problem import Problem
 
 def fix(obj, fix_vars):
     """
@@ -14,8 +15,10 @@ def fix(obj, fix_vars):
     :return: a problem or an expression
     """
     if isinstance(obj,Expression):
+        print("Hi")
         return fix_expr(obj,fix_vars)
     elif isinstance(obj,Problem):
+        print("Hello")
         return fix_prob(obj,fix_vars)
     else:
         print("wrong type to fix")
