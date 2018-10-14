@@ -25,7 +25,7 @@ class fixTestCases(BaseTest):
         fix_vars = [x1, x3]
 
         #Fix variables and get list of parameters
-        new_expr = fix(expr, fix_vars))
+        new_expr = fix(expr, fix_vars)
         list_params = new_expr.parameters()
 
         #Assertion test
@@ -50,7 +50,7 @@ class fixTestCases(BaseTest):
         fix_vars = [x1, x3]
 
         #Fix variables and get list of parameters
-        new_prob = fix(prob, fix_vars))
+        new_prob = fix(prob, fix_vars)
         list_params = new_prob.parameters()
 
         #Assertion test
