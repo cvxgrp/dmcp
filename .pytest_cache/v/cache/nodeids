@@ -1,0 +1,4 @@
+[
+  "dmcp/test/test_fix.py::fixTestCases::test_fixExpr",
+  "dmcp/test/test_fix.py::fixTestCases::test_fixProb"
+]

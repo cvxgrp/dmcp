@@ -33,7 +33,7 @@ class fixTestCases(BaseTest):
         list_params = new_expr.parameters()
 
         #Assertion test
-        self.assertEqual(len(list_params), len(self.fix_vars))
+        self.assertEqual(len(list_params), 2)
 
     def test_fixProb(self):
         '''
@@ -49,4 +49,4 @@ class fixTestCases(BaseTest):
         list_params = new_prob.parameters()
 
         #Assertion test
-        self.assertEqual(len(list_params), len(self.fix_vars))
+        self.assertEqual(len(list_params), 4)
