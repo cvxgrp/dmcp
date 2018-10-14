@@ -7,51 +7,46 @@ import numpy as np
 import cvxpy as cvx
 from dmcp.fix import fix
 
-class fixTestCases(BaseTest):    
-    def test_fixExpr(self, obj, fix_vars):
+class fixTestCases(BaseTest):  
+    def setUp(self):
+        '''
+        Used to setup all the parameters of the tests.
+        '''  
+        #Define variables
+        self.x1 = cvx.Variable()
+        self.x2 = cvx.Variable()
+        self.x3 = cvx.Variable()
+        self.x4 = cvx.Variable()
+
+        #Define fixed list
+        self.fix_vars = [self.x1, self.x3]
+
+    def test_fixExpr(self):
         '''
         Tests whether or not the fix variable function works for expressions.
         '''
-        #Define variables
-        x1 = cvx.Variable()
-        x2 = cv2.Variable()
-        x3 = cv2.Variable()
-        x4 = cv2.Variable()
-
         #Define expression
-        expr = cvx.abs(x1*x2 + x3*x4)
-
-        #Define fixed list
-        fix_vars = [x1, x3]
+        expr = cvx.abs(self.x1*self.x2 + self.x3*self.x4)
 
         #Fix variables and get list of parameters
-        new_expr = fix(expr, fix_vars)
+        new_expr = fix(expr, self.fix_vars)
         list_params = new_expr.parameters()
 
         #Assertion test
-        self.assertEqual(len(list_params), len(fix_vars))
+        self.assertEqual(len(list_params), len(self.fix_vars))
 
-    def test_fixProb(self, prob, fix_vars):
+    def test_fixProb(self):
         '''
         Tests whether or not the fix variable function works for problems/
         '''
-        #Define variables
-        x1 = cvx.Variable()
-        x2 = cv2.Variable()
-        x3 = cv2.Variable()
-        x4 = cv2.Variable()
-        
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
-        constr = [x1*x2 + x3*x4 == 1]
+        obj = cvx.Minimize(cvx.abs(self.x1*self.x2 + self.x3*self.x4))
+        constr = [self.x1*self.x2 + self.x3*self.x4 == 1]
         prob = cvx.Problem(obj, constr)
 
-        #Define fixed list
-        fix_vars = [x1, x3]
-
         #Fix variables and get list of parameters
-        new_prob = fix(prob, fix_vars)
+        new_prob = fix(prob, self.fix_vars)
         list_params = new_prob.parameters()
 
         #Assertion test
-        self.assertEqual(len(list_params), len(fix_vars))
+        self.assertEqual(len(list_params), len(self.fix_vars))
