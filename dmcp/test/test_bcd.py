@@ -13,7 +13,7 @@ class bcdTestCases(BaseTest):
         Checks if a given problem (prob) is dmcp.
         '''
         #Define variables
-        x = cvx.Variable(4,1)
+        x = cvx.Variable((4,1))
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
@@ -28,7 +28,7 @@ class bcdTestCases(BaseTest):
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
         #Define variables
-        x = cvx.Variable(4,1)
+        x = cvx.Variable((4,1))
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
@@ -47,7 +47,7 @@ class bcdTestCases(BaseTest):
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
         #Define variables
-        x = cvx.Variable(4,1)
+        x = cvx.Variable((4,1))
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
@@ -66,7 +66,7 @@ class bcdTestCases(BaseTest):
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
         #Define variables
-        x = cvx.Variable(4,1)
+        x = cvx.Variable((4,1))
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
@@ -103,7 +103,7 @@ class bcdTestCases(BaseTest):
         Checks if the add slack function works.
         '''
         #Define variables
-        x = cvx.Variable(4,1)
+        x = cvx.Variable((4,1))
 
         #Define slack variable inputs
         mu = 5e-3
@@ -136,7 +136,7 @@ class bcdTestCases(BaseTest):
         Checks if proximal objective function works.
         '''
         #Define variables
-        x = cvx.Variable(4,1)
+        x = cvx.Variable((4,1))
 
         #Define slack variable inputs
         lambd = 1/2

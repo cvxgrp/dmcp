@@ -18,7 +18,7 @@ class findMinimalTestCases(BaseTest):
         Tests the function that finds minimal sets.
         '''
         # Define variables
-        x = cvx.Variable(4,1)
+        x = cvx.Variable((4,1))
 
         # Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
