@@ -25,28 +25,48 @@ class fixTestCases(BaseTest):
         '''
         Tests whether or not the fix variable function works for expressions.
         '''
-        #Define expression
+        # Define expression
         expr = cvx.abs(self.x1*self.x2 + self.x3*self.x4)
 
-        #Fix variables and get list of parameters
+        # Fix variables and get list of parameters
         new_expr = fix(expr, self.fix_vars)
         list_params = new_expr.parameters()
 
-        #Assertion test
+        # Assertion test
+        # 2 variables since fix_vars has 2 elements
         self.assertEqual(len(list_params), 2)
 
     def test_fixProb(self):
         '''
         Tests whether or not the fix variable function works for problems/
         '''
-        #Define problem
+        # Define problem
         obj = cvx.Minimize(cvx.abs(self.x1*self.x2 + self.x3*self.x4))
         constr = [self.x1*self.x2 + self.x3*self.x4 == 1]
         prob = cvx.Problem(obj, constr)
 
-        #Fix variables and get list of parameters
+        # Fix variables and get list of parameters
         new_prob = fix(prob, self.fix_vars)
         list_params = new_prob.parameters()
 
-        #Assertion test
+        # Assertion test
+        # 4 variables since x1 and x3 for both objective and constraints are fixed
         self.assertEqual(len(list_params), 4)
+
+    def test_fixPSD(self):
+        '''
+        Tests whether or not the fix variable function works for problems/
+        '''
+        # Define problem
+        x = cvx.Variable((4,4))
+        obj = cvx.Minimize(cvx.norm(x))
+        constr = [x >> 0]
+        prob = cvx.Problem(obj, constr)
+
+        # Fix variables and get list of parameters
+        new_prob = fix(prob, [x])
+        list_params = new_prob.parameters()
+
+        # Assertion test
+        # 2 variables since x is symmetric positive semi-definite
+        self.assertEqual(len(list_params), 2)
