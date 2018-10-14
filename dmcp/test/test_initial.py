@@ -5,7 +5,7 @@ from __future__ import print_function
 from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
-import dmcp
+import dmcp.initial as initial
 
 class initialTestCases(BaseTest):
     def setUp(self):

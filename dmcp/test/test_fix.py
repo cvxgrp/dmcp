@@ -7,12 +7,7 @@ import numpy as np
 import cvxpy as cvx
 from dmcp.fix import fix
 
-class fixTestCases(BaseTest):
-    def setUp(self):
-        '''
-        Used to setup all the parameters of the tests.
-        '''
-    
+class fixTestCases(BaseTest):    
     def test_fixExpr(self, obj, fix_vars):
         '''
         Tests whether or not the fix variable function works for expressions.
