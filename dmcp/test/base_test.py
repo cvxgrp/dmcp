@@ -23,7 +23,7 @@ class BaseTest(unittest.TestCase):
         else:
             return mat
 
-    #Test function to check if computed solution, comp_sol, is approximately equal to any of the possible solutions, sols.
+    # Test function to check if computed solution, comp_sol, is approximately equal to any of the possible solutions, sols.
     def assertIsAlmostIn(self, comp_sol, sols, tolerance=0.000001):
         '''
         Input: comp_sol - the computed solution in the optimization problem

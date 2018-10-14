@@ -17,6 +17,19 @@ class findMinimalTestCases(BaseTest):
         '''
         Tests the function that finds minimal sets.
         '''
+        # Define variables
+        x = cvx.Variable(4,1)
+
+        # Define problem
+        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
+        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        prob = cvx.Problem(obj, constr)
+
+        # Get minimal sets
+        outputSets = find_set.find_minimal_sets(prob)
+
+        # Assert the set set of minimal sets
+        self.assertEqual(outputSets, [[2,1], [3,1], [2,0], [3,0]])
 
     def test_findMIS(self):
         '''
