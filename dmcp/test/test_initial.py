@@ -31,7 +31,8 @@ class initialTestCases(BaseTest):
         initial.rand_initial(self.prob)
 
         #Check if problem variables are initialized
-        self.assertEqual(np.any(self.prob.value is None), False)
+        values = [var.value for var in self.prob.variables()]
+        self.assertEqual(np.any(values is None), False)
     
     def test_randInitialProject(self):
         '''
@@ -41,4 +42,5 @@ class initialTestCases(BaseTest):
         initial.rand_initial_proj(self.prob)
 
         #Check if problem variables are initialized
-        self.assertEqual(np.any(self.prob.value is None), False)
+        values = [var.value for var in self.prob.variables()]
+        self.assertEqual(np.any(values is None), False)
