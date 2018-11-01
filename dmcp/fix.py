@@ -19,6 +19,8 @@ def fix(obj, fix_vars):
     :param fix_var: a list of variables
     :return: a problem or an expression
     """
+
+    # Create list of parameters
     variable_list = obj.variables()
     param_list = []
     for var in variable_list:
@@ -36,6 +38,8 @@ def fix(obj, fix_vars):
             para = cvx.Parameter(shape = var.shape)
             para.value = var.value
             param_list.append(para)
+    
+    
     if isinstance(obj,Expression):
         return fix_expr(obj,fix_vars, param_list)
     elif isinstance(obj,Problem):

@@ -50,7 +50,7 @@ class fixTestCases(BaseTest):
         list_params = new_prob.parameters()
 
         # Assertion test
-        # 4 variables since x1 and x3 for both objective and constraints are fixed
+        # 2 variables since x1 and x3 for both objective and constraints are fixed
         self.assertEqual(len(list_params), 2)
 
     def test_fixPSD(self):
@@ -58,7 +58,7 @@ class fixTestCases(BaseTest):
         Tests whether or not the fix variable function works for problems/
         '''
         # Define problem
-        x = cvx.Variable((4,4))
+        x = cvx.Variable((4,4), PSD=True)
         obj = cvx.Minimize(cvx.norm(x))
         constr = [x >> 0]
         prob = cvx.Problem(obj, constr)
@@ -68,5 +68,5 @@ class fixTestCases(BaseTest):
         list_params = new_prob.parameters()
 
         # Assertion test
-        # 2 variables since x is symmetric positive semi-definite
+        # 1 variable since x is a single symmetric positive semi-definite matrix
         self.assertEqual(len(list_params), 1)
