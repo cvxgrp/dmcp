@@ -13,9 +13,9 @@ class fixTestCases(BaseTest):
         Used to setup all the parameters of the tests.
         '''  
         #Define variables
-        self.x1 = cvx.Variable()
+        self.x1 = cvx.Variable(nonpos = True)
         self.x2 = cvx.Variable()
-        self.x3 = cvx.Variable()
+        self.x3 = cvx.Variable(nonneg = True)
         self.x4 = cvx.Variable()
 
         #Define fixed list

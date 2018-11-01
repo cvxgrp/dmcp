@@ -22,19 +22,20 @@ def fix(obj, fix_vars):
     variable_list = obj.variables()
     param_list = []
     for var in variable_list:
-        if var.sign == "POSITIVE":
+        if var.sign == "NONNEGATIVE":
             para = cvx.Parameter(shape = var.shape, nonneg=True)
-            para.value = abs(var).value
+            if var.value is not None:
+                para.value = abs(var.value)
             param_list.append(para)
-        elif var.sign == "NEGATIVE":
-            para = cvx.Parameter(shape = var.shape, nonpost=True)
-            para.value = -abs(var).value
+        elif var.sign == "NONPOSITIVE":
+            para = cvx.Parameter(shape = var.shape, nonpos=True)
+            if var.value is not None:
+                para.value = -abs(var.value)
             param_list.append(para)
         else:
             para = cvx.Parameter(shape = var.shape)
             para.value = var.value
             param_list.append(para)
-        
     if isinstance(obj,Expression):
         return fix_expr(obj,fix_vars, param_list)
     elif isinstance(obj,Problem):
