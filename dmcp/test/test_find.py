@@ -12,25 +12,34 @@ class findMinimalTestCases(BaseTest):
         '''
         Used to setup all the parameters of the tests.
         '''
-    
-    def test_findMinimalSets(self):
-        '''
-        Tests the function that finds minimal sets.
-        '''
         # Define variables
         x = cvx.Variable((4,1))
 
         # Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]*x[1] + x[2]*x[3] == 1]
-        prob = cvx.Problem(obj, constr)
-
+        constr = [x[0] + x[1] + x[2] + x[3] == 1]
+        self.prob = cvx.Problem(obj, constr)
+    
+    def test_findMinimalSets(self):
+        '''
+        Tests the function that finds minimal sets.
+        '''
         # Get minimal sets
-        outputSets = find_set.find_minimal_sets(prob)
+        outputSets = find_set.find_minimal_sets(self.prob)
 
         # Assert the set set of minimal sets
         self.assertEqual(outputSets, [[2,1], [3,1], [2,0], [3,0]])
 
+    def test_findAllSets(self):
+        '''
+        Tests whether or not the function finds all minimal sets
+        '''
+        # Get minimal sets
+        outputSets = find_set.find_minimal_sets(self.prob, is_all=True)
+
+        # Assert the set set of minimal sets
+        self.assertEqual(outputSets, [[2,1], [3,1], [2,0], [3,0]])
+    """
     def test_findMIS(self):
         '''
         Tests the function that finds maximals independent sets of a graph until all vertices are included.
@@ -98,3 +107,4 @@ class findMinimalTestCases(BaseTest):
         '''
         Tests the function that erase variable from a set of variables.
         '''
+    """

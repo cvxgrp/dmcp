@@ -20,7 +20,7 @@ class initialTestCases(BaseTest):
         
         #Define problem
         obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
-        constr = [x1*x2 + x3*x4 == 1]
+        constr = [x1 + x2 + x3 + x4 == 1]
         self.prob = cvx.Problem(obj, constr)
     
     def test_randInitial(self):

@@ -26,7 +26,7 @@ class fixTestCases(BaseTest):
         Tests whether or not the fix variable function works for expressions.
         '''
         # Define expression
-        expr = cvx.abs(self.x1*self.x2 + self.x3*self.x4)
+        expr = cvx.abs(self.x1 + self.x2 + self.x3 + self.x4)
 
         # Fix variables and get list of parameters
         new_expr = fix(expr, self.fix_vars)
@@ -42,7 +42,7 @@ class fixTestCases(BaseTest):
         '''
         # Define problem
         obj = cvx.Minimize(cvx.abs(self.x1*self.x2 + self.x3*self.x4))
-        constr = [self.x1*self.x2 + self.x3*self.x4 == 1]
+        constr = [self.x1 + self.x2 + self.x3 + self.x4 == 1]
         prob = cvx.Problem(obj, constr)
 
         # Fix variables and get list of parameters
@@ -51,7 +51,7 @@ class fixTestCases(BaseTest):
 
         # Assertion test
         # 4 variables since x1 and x3 for both objective and constraints are fixed
-        self.assertEqual(len(list_params), 4)
+        self.assertEqual(len(list_params), 2)
 
     def test_fixPSD(self):
         '''

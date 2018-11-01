@@ -1,1 +1,4 @@
-{}
+{
+  "dmcp/test/test_find.py::findMinimalTestCases::test_findAllSets": true,
+  "dmcp/test/test_find.py::findMinimalTestCases::test_findMinimalSets": true
+}

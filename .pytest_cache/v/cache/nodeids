@@ -1,4 +1,4 @@
 [
-  "dmcp/test/test_initial.py::initialTestCases::test_randInitial",
-  "dmcp/test/test_initial.py::initialTestCases::test_randInitialProject"
+  "dmcp/test/test_find.py::findMinimalTestCases::test_findAllSets",
+  "dmcp/test/test_find.py::findMinimalTestCases::test_findMinimalSets"
 ]

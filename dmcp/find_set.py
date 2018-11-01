@@ -8,6 +8,7 @@ from dmcp.fix import fix
 from dmcp.fix import fix_prob
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
+from cvxpy.expressions.variable import Variable
 import cvxpy as cvx
 
 def find_minimal_sets(prob, is_all = False):
@@ -27,7 +28,7 @@ def find_minimal_sets(prob, is_all = False):
         maxset_id = [var.id for var in maxset]
         fix_id = [var.id for var in Vars if var.id not in maxset_id]
         V = [var.id for var in Vars]
-        fix_idx = [V .index(varid) for varid in fix_id]
+        fix_idx = [V.index(varid) for varid in fix_id]
         result.append(fix_idx)
     return result
 

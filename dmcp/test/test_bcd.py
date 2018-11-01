@@ -17,7 +17,7 @@ class bcdTestCases(BaseTest):
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        constr = [x[0] + x[1] + x[2]+ x[3] == 1]
         prob = cvx.Problem(obj, constr)
         
         #Assertion test
@@ -32,7 +32,7 @@ class bcdTestCases(BaseTest):
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        constr = [x[0]+ x[1] + x[2] + x[3] == 1]
         prob = cvx.Problem(obj, constr)
 
         #Solve problem
@@ -51,7 +51,7 @@ class bcdTestCases(BaseTest):
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        constr = [x[0] + x[1] + x[2] + x[3] == 1]
         prob = cvx.Problem(obj, constr)
 
         #Solve problem
@@ -70,7 +70,7 @@ class bcdTestCases(BaseTest):
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        constr = [x[0] + x[1] + x[2] + x[3] == 1]
         prob = cvx.Problem(obj, constr)
 
         #Solve problem
@@ -111,7 +111,7 @@ class bcdTestCases(BaseTest):
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        constr = [x[0] + x[1] + x[2] + x[3] == 1]
         prob = cvx.Problem(obj, constr)
 
         #Get slacked problem
@@ -119,7 +119,7 @@ class bcdTestCases(BaseTest):
 
         #Define ground truth for testing
         objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + mu*cvx.abs(slack))
-        constrTest = [x[0]*x[1] + x[2]*x[3] - 1 == slack]
+        constrTest = [x[0] + x[1] + x[2] + x[3] - 1 == slack]
         probTest = cvx.Problem(objTest, constrTest)        
 
         #Define Initialization for Testing
@@ -148,7 +148,7 @@ class bcdTestCases(BaseTest):
 
         #Define problem
         obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]*x[1] + x[2]*x[3] == 1]
+        constr = [x[0] + x[1] + x[2] + x[3] == 1]
         prob = cvx.Problem(obj, constr)
 
         #Get proximal problem
