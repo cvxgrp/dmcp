@@ -19,14 +19,30 @@ def fix(obj, fix_vars):
     :param fix_var: a list of variables
     :return: a problem or an expression
     """
+    variable_list = obj.variables()
+    param_list = []
+    for var in variable_list:
+        if var.sign == "POSITIVE":
+            para = cvx.Parameter(shape = var.shape, nonneg=True)
+            para.value = abs(var).value
+            param_list.append(para)
+        elif var.sign == "NEGATIVE":
+            para = cvx.Parameter(shape = var.shape, nonpost=True)
+            para.value = -abs(var).value
+            param_list.append(para)
+        else:
+            para = cvx.Parameter(shape = var.shape)
+            para.value = var.value
+            param_list.append(para)
+        
     if isinstance(obj,Expression):
-        return fix_expr(obj,fix_vars)
+        return fix_expr(obj,fix_vars, param_list)
     elif isinstance(obj,Problem):
-        return fix_prob(obj,fix_vars)
+        return fix_prob(obj,fix_vars, param_list)
     else:
         print("wrong type to fix")
 
-def fix_prob(prob, fix_var):
+def fix_prob(prob, fix_var, param_list):
     """Fix the given variables in the problem.
 
         Parameters
@@ -34,19 +50,21 @@ def fix_prob(prob, fix_var):
         expr : Problem
         fix_var : List
             Variables to be fixed.
+        params: : List
+            List of parameters to replace variables from fix_var
 
         Returns
         -------
         Problem
         """
-    new_cost = fix_expr(prob.objective.expr, fix_var)
+    new_cost = fix_expr(prob.objective.expr, fix_var, param_list)
     if prob.objective.NAME == 'minimize':
         new_obj = cvx.Minimize(new_cost)
     else:
         new_obj = cvx.Maximize(new_cost)
     new_constr = []
     for con in prob.constraints:
-        fix_con = fix_expr(con.expr, fix_var)
+        fix_con = fix_expr(con.expr, fix_var, param_list)
         if isinstance(con, NonPos):
             new_constr.append(fix_con <= 0)
         elif isinstance(con, PSD):
@@ -56,8 +74,7 @@ def fix_prob(prob, fix_var):
     new_prob = Problem(new_obj, new_constr)
     return new_prob
 
-
-def fix_expr(expr, fix_var):
+def fix_expr(expr, fix_var, param_list):
     """Fix the given variables in the expression.
 
         Parameters
@@ -65,6 +82,8 @@ def fix_expr(expr, fix_var):
         expr : Expression
         fix_var : List
             Variables to be fixed.
+        params : List
+            List of parameters to replace variables from fix_var
 
         Returns
         -------
@@ -72,20 +91,13 @@ def fix_expr(expr, fix_var):
     """
     fix_var_id = [var.id for var in fix_var]
     if isinstance(expr, Variable) and expr.id in fix_var_id:
-        if expr.sign == "POSITIVE":
-            para = cvx.Parameter(shape = expr.shape, nonneg=True)
-            para.value = abs(expr).value
-        elif expr.sign == "NEGATIVE":
-            para = cvx.Parameter(shape = expr.shape, nonpost=True)
-            para.value = -abs(expr).value
-        else:
-            para = cvx.Parameter(shape = expr.shape)
-            para.value = expr.value
-        return para
+        param_index = fix_var_id.index(expr.id)
+        param = param_list[param_index]
+        return param
     elif len(expr.args) == 0:
         return expr
     else:
         new_args = []
         for arg in expr.args:
-            new_args.append(fix(arg, fix_var))
+            new_args.append(fix_expr(arg, fix_var, param_list))
         return expr.copy(new_args)

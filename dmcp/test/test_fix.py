@@ -26,7 +26,7 @@ class fixTestCases(BaseTest):
         Tests whether or not the fix variable function works for expressions.
         '''
         # Define expression
-        expr = cvx.abs(self.x1 + self.x2 + self.x3 + self.x4)
+        expr = cvx.abs(self.x1 + self.x1 + self.x2 + self.x3 + self.x4)
 
         # Fix variables and get list of parameters
         new_expr = fix(expr, self.fix_vars)
@@ -69,4 +69,4 @@ class fixTestCases(BaseTest):
 
         # Assertion test
         # 2 variables since x is symmetric positive semi-definite
-        self.assertEqual(len(list_params), 2)
+        self.assertEqual(len(list_params), 1)
