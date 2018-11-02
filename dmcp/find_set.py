@@ -6,6 +6,7 @@ __author__ = 'Xinyue'
 
 from dmcp.fix import fix
 from dmcp.fix import fix_prob
+from dmcp.utils import is_atom_multiconvex
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
 from cvxpy.expressions.variable import Variable
@@ -139,7 +140,7 @@ def search_conflict_l(expr,stack,V,t):
         for arg in expr.args:
             stack,t = search_conflict_l(arg,stack,V,t)
             args_num += 1
-        if not expr.is_atom_multiconvex():        # at a convex node
+        if not is_atom_multiconvex(expr):        # at a convex node
             while args_num>1:
                 stack[-2] = stack[-1] + stack[-2] # merge lists of its arguments
                 args_num -= 1
@@ -167,7 +168,7 @@ def search_conflict(expr,t,varid):
     """
     for arg in expr.args:
         t = search_conflict(arg,t,varid)
-    if expr.is_atom_multiconvex() and not expr.args[0].is_constant() and not expr.args[1].is_constant():
+    if is_atom_multiconvex(expr) and not expr.args[0].is_constant() and not expr.args[1].is_constant():
         id1 = [var.id for var in expr.args[0].variables()] # var ids in left child node
         id2 = [var.id for var in expr.args[1].variables()]
         index1 = [varid.index(vi) for vi in id1] # table index in left child node

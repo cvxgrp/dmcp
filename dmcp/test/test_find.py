@@ -13,11 +13,14 @@ class findMinimalTestCases(BaseTest):
         Used to setup all the parameters of the tests.
         '''
         # Define variables
-        x = cvx.Variable((4,1))
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
 
         # Define problem
-        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0] + x[1] + x[2] + x[3] == 1]
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1 + x2 + x3 + x4 == 1]
         self.prob = cvx.Problem(obj, constr)
     
     def test_findMinimalSets(self):
