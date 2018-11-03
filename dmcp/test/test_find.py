@@ -18,6 +18,8 @@ class findMinimalTestCases(BaseTest):
         x3 = cvx.Variable()
         x4 = cvx.Variable()
 
+        print(x1.id, x2.id, x3.id, x4.id)
+
         # Define problem
         obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
         constr = [x1 + x2 + x3 + x4 == 1]
@@ -29,9 +31,11 @@ class findMinimalTestCases(BaseTest):
         '''
         # Get minimal sets
         outputSets = find_set.find_minimal_sets(self.prob)
-
         # Assert the set set of minimal sets
-        self.assertEqual(outputSets, [[2,1], [3,1], [2,0], [3,0]])
+        outputMinimal = {frozenset(i) for i in outputSets}
+        print(outputSets)
+        print(outputMinimal)
+        self.assertEqual(outputMinimal, {frozenset([1, 3]), frozenset([1, 2]), frozenset([0, 3])})
 
     def test_findAllSets(self):
         '''
@@ -41,73 +45,7 @@ class findMinimalTestCases(BaseTest):
         outputSets = find_set.find_minimal_sets(self.prob, is_all=True)
 
         # Assert the set set of minimal sets
-        self.assertEqual(outputSets, [[2,1], [3,1], [2,0], [3,0]])
-    """
-    def test_findMIS(self):
-        '''
-        Tests the function that finds maximals independent sets of a graph until all vertices are included.
-        '''
-
-    def test_findAllIset(self):
-        '''
-        Tests the function that finds all independent subsets, including the empty set.
-        '''
-
-    def test_isIndependent(self):
-        '''
-        Tests the function that checks if a subset of vertices is independent on a graph.
-        '''
-    
-    def test_findAllSubsets(self):
-        '''
-        Tests the function that finds all subsets of a set, except for the empty set.
-        '''
-    
-    def test_searchConflictL(self):
-        '''
-        Tests the function that searches conflict variables in an expression using lists.
-        '''
-
-    def test_searchConflict(self):
-        '''
-        Tests the function that searches conflict variables in an expression.
-        '''
-
-    def test_isIntersect(self):
-        '''
-        Tests the function that checks if the intersection of two sets, set1 and set2, is nonempty.
-        '''
-
-    def test_union(self):
-        '''
-        Tests the function that takes the union of two sets set1 and set2.
-        '''
-
-    def test_findMaxsetProb(self):
-        '''
-        Tests the function that analyzes a problem to find maximal subsets of variables, 
-        so that the problem is dcp restricting on each subset.
-        '''
-
-    def test_findDCPMaxset(self):
-        '''
-        Tests the function that finds maximal subsets of variables, so that expr is a
-        dcp expression within each subset.
-        '''
-
-    def test_findDCPSet(self):
-        '''
-        Tests the function that finds subsets of variables, so that expr is
-        a dcp expression within each subset.
-        '''
-
-    def test_isSubset(self):
-        '''
-        Tests the function that checks if a set is a subset of another set.
-        '''
-
-    def test_erase(self):
-        '''
-        Tests the function that erase variable from a set of variables.
-        '''
-    """
+        outputMinimal = {frozenset(i) for i in outputSets}
+        print(outputSets)
+        print(outputMinimal)
+        self.assertEqual(outputMinimal, {frozenset([2,1]), frozenset([3,1]), frozenset([2,0]), frozenset([3,0])})

@@ -5,7 +5,6 @@ from __future__ import print_function
 __author__ = 'Xinyue'
 
 from dmcp.fix import fix
-from dmcp.fix import fix_prob
 from dmcp.utils import is_atom_multiconvex
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
@@ -49,7 +48,7 @@ def find_MIS(prob, is_all):
     varid = [var.id for var in V]
     stack, g = search_conflict_l(prob.objective.args[0],[],varid,g)
     for con in prob.constraints:
-        stack, g = search_conflict_l(con.args[0] + con.args[1],[],varid,g)
+        stack, g = search_conflict_l(con.args[0],[],varid,g)
     # find all independent sets of the conflict graph
     i_subsets = find_all_iset(V,g)
     # sort all independent sets
@@ -67,7 +66,7 @@ def find_MIS(prob, is_all):
         if flag:
             set_id = [var.id for var in i_subsets[sort_idx[-count]]]
             fix_set = [var for var in V if var.id not in set_id]
-            if fix_prob(prob, fix_set).is_dcp():
+            if fix(prob, fix_set).is_dcp():
                 result.append(i_subsets[sort_idx[-count]])
                 U = union(U, i_subsets[sort_idx[-count]])
         if not is_all:
@@ -231,7 +230,7 @@ def find_maxset_prob(prob,vars,current=[]):
         if all([not is_subset(vars_active, current_set) for current_set in current]):
             vars_active_id = [var.id for var in vars_active]
             fix_vars_temp = [var for var in prob.variables() if not var.id in vars_active_id]
-            if fix_prob(prob,fix_vars_temp).is_dcp() == True:
+            if fix(prob,fix_vars_temp).is_dcp() == True:
                 result.append(vars_active) # find a subset
                 current.append(vars_active)
             else:
