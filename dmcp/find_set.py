@@ -22,8 +22,6 @@ def find_minimal_sets(prob, is_all = False):
     if prob.is_dcp():
         return []
     maxsets = find_MIS(prob, is_all)
-    for sets in maxsets:
-        print("Hi", [var.id for var in sets])
     result = []
     Vars = prob.variables()
     for maxset in maxsets:
