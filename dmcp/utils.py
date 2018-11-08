@@ -14,9 +14,7 @@ def is_atom_multiconvex(obj):
         output:
             boolean:    if atom is multi-convex
     '''
-    if isinstance(obj, MulExpression):
-        return True
-    elif isinstance(obj, multiply):
+    if isinstance(obj, multiply) or isinstance(obj, MulExpression):
         return True
     else:
         return False

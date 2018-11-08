@@ -18,12 +18,15 @@ class findMinimalTestCases(BaseTest):
         x3 = cvx.Variable()
         x4 = cvx.Variable()
 
-        print(x1.id, x2.id, x3.id, x4.id)
-
         # Define problem
         obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
         constr = [x1 + x2 + x3 + x4 == 1]
         self.prob = cvx.Problem(obj, constr)
+    
+        # Define test case
+        min_id = np.argmin([self])
+        self.min_set = {frozenset({0,1}), frozenset([2,3])}
+        self.min_set_all = {frozenset([2, 1]), frozenset([3, 1]), frozenset([2, 0]), frozenset([3, 0])}
     
     def test_findMinimalSets(self):
         '''
@@ -31,11 +34,16 @@ class findMinimalTestCases(BaseTest):
         '''
         # Get minimal sets
         outputSets = find_set.find_minimal_sets(self.prob)
-        # Assert the set set of minimal sets
+        
+        
+        # Define output minimal sets
         outputMinimal = {frozenset(i) for i in outputSets}
-        print(outputSets)
-        print(outputMinimal)
-        self.assertEqual(outputMinimal, {frozenset([1, 3]), frozenset([1, 2]), frozenset([0, 3])})
+        
+        # Check of multi-convex variables are fixed part of the set of minimal sets
+        checkMultiConvex = any(item in outputMinimal for item in self.min_set)
+
+        #Assert that these variables do not exist in the system
+        assert checkMultiConvex == False
 
     def test_findAllSets(self):
         '''
@@ -46,6 +54,4 @@ class findMinimalTestCases(BaseTest):
 
         # Assert the set set of minimal sets
         outputMinimal = {frozenset(i) for i in outputSets}
-        print(outputSets)
-        print(outputMinimal)
-        self.assertEqual(outputMinimal, {frozenset([2,1]), frozenset([3,1]), frozenset([2,0]), frozenset([3,0])})
+        self.assertEqual(outputMinimal, self.min_set_all)

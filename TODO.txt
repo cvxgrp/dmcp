@@ -1,0 +1,19 @@
+DMCP
+Objective: To update DMCP to CVXPY 1.0 and removing the dependency on the feature/dccp branch
+
+Current to do:
+1) Create test scripts for find.py
+2) Fix all syntax changes from CVXPY 0.4 to CVXPY 1.0
+3) Fix all unaccounted differences
+4) Create example for EM algorithm
+
+Future plans:
+1) Add division of expressions method and overload "/" operator
+2) Add convolution of two expressions
+3) Add ".*" overload for element wise multiplication
+4) Add function to fix a vector element-wise
+
+
+Done:
+1) Fix fix.py
+2) Create lookup table for is_atom_multiconvex()
