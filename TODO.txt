@@ -12,6 +12,7 @@ Future plans:
 2) Add convolution of two expressions
 3) Add ".*" overload for element wise multiplication
 4) Add function to fix a vector element-wise
+5) Fix PNORM function
 
 
 Done:
