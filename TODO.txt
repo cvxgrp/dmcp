@@ -2,7 +2,7 @@ DMCP
 Objective: To update DMCP to CVXPY 1.0 and removing the dependency on the feature/dccp branch
 
 Current to do:
-1) Create test scripts for find.py
+1) Fix BCD
 2) Fix all syntax changes from CVXPY 0.4 to CVXPY 1.0
 3) Fix all unaccounted differences
 4) Create example for EM algorithm
@@ -17,3 +17,4 @@ Future plans:
 Done:
 1) Fix fix.py
 2) Create lookup table for is_atom_multiconvex()
+3) Fix find_set.py
