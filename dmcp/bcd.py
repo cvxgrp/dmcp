@@ -77,6 +77,7 @@ def bcd(prob, max_iter = 100, solver = 'SCS', mu = 5e-3, rho = 1.5, mu_max = 1e5
         print("number of iterations:", result[0]+1)
         print("maximum value of slack variables:", result[1])
         print("objective value:", prob.objective.value)
+        print("Value of the variables: ", [var.value for var in prob.variables()])
         return result
 
 def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, proximal):
@@ -91,14 +92,20 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
     for it in range(max_iter):
         np.random.shuffle(fix_sets)
         #print "======= iteration", it, "======="
-        for set in fix_sets:
-            #fix_set = [var for var in prob.variables() if var.id in set]
-            fix_var = [prob.variables()[idx] for idx in set]
+        for subset in fix_sets:
+            problem_variables = prob.variables()
+            problem_variables.sort(key = lambda x:x.id)
+            fix_var = [prob.variables()[idx] for idx in subset]
             # fix variables in fix_set
             fixed_p = fix(prob,fix_var)
             # linearize
             if linear:
-                fixed_p.objective.args[0] = cvx.linearize(fixed_p.objective.args[0])
+                fixed_p_obj = cvx.linearize(fixed_p.objective.expr)
+                fixed_p_constr = fixed_p.constraints
+                if fixed_p.objective.NAME == 'minimize':
+                    fixed_p = cvx.Problem(cvx.Minimize(fixed_p_obj), fixed_p_constr)
+                else:
+                    fixed_p = cvx.Problem(cvx.Maximize(fixed_p_obj), fixed_p_constr)
             # add slack variables
             fixed_p, var_slack = add_slack(fixed_p, mu)
             # proximal operator
@@ -108,7 +115,7 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
             fixed_p.solve(solver = solver)
             max_slack = 0
             if not var_slack == []:
-                max_slack = np.max([np.max(abs(var).value) for var in var_slack])
+                max_slack = np.max([np.max(cvx.abs(var).value) for var in var_slack])
                 print("max abs slack =", max_slack, "mu =", mu, "original objective value =", prob.objective.args[0].value, "fixed objective value =",fixed_p.objective.args[0].value, "status=", fixed_p.status)
             else:
                 print("original objective value =", prob.objective.args[0].value, "status=", fixed_p.status)

@@ -1,6 +1,4 @@
 {
-  "dmcp/test/test_bcd.py::bcdTestCases::test_bcdMinimize": true,
   "dmcp/test/test_bcd.py::bcdTestCases::test_bcdProxLinear": true,
-  "dmcp/test/test_bcd.py::bcdTestCases::test_bcdProximal": true,
   "dmcp/test/test_fix.py::fixTestCases::test_fixProb": true
 }
