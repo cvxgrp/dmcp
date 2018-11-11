@@ -1,4 +1,9 @@
 [
-  "dmcp/test/test_find.py::findMinimalTestCases::test_findAllSets",
-  "dmcp/test/test_find.py::findMinimalTestCases::test_findMinimalSets"
+  "dmcp/test/test_bcd.py::bcdTestCases::test_bcdMinimize",
+  "dmcp/test/test_bcd.py::bcdTestCases::test_bcdProxLinear",
+  "dmcp/test/test_bcd.py::bcdTestCases::test_bcdProximal",
+  "dmcp/test/test_bcd.py::bcdTestCases::test_dmcp",
+  "dmcp/test/test_bcd.py::bcdTestCases::test_linearize",
+  "dmcp/test/test_bcd.py::bcdTestCases::test_proximal",
+  "dmcp/test/test_bcd.py::bcdTestCases::test_slack"
 ]

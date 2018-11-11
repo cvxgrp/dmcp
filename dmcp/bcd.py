@@ -8,8 +8,10 @@ import cvxpy as cvx
 from dmcp.initial import rand_initial
 from dmcp.find_set import find_minimal_sets
 from dmcp.fix import fix
-import cvxpy as cvx
 import numpy as np
+from cvxpy.constraints.nonpos import NonPos
+from cvxpy.constraints.zero import Zero
+from cvxpy.constraints.psd import PSD
 
 def is_dmcp(prob):
     """
@@ -96,7 +98,7 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
             fixed_p = fix(prob,fix_var)
             # linearize
             if linear:
-                fixed_p.objective.args[0] = linearize(fixed_p.objective.args[0])
+                fixed_p.objective.args[0] = cvx.linearize(fixed_p.objective.args[0])
             # add slack variables
             fixed_p, var_slack = add_slack(fixed_p, mu)
             # proximal operator
@@ -137,10 +139,10 @@ def linearize(expr):
         grad_map = expr.grad
         for var in expr.variables():
             if var.is_matrix():
-                flattened = np.transpose(grad_map[var])*vec(var - var.value)
-                tangent = tangent + reshape(flattened, *expr.size)
+                flattened = np.transpose(grad_map[var])*cvx.vec(var - var.value)
+                tangent = tangent + cvx.reshape(flattened, *expr.shape)
             else:
-                if var.size[1] == 1:
+                if var.shape[1] == 1:
                     tangent = tangent + np.transpose(grad_map[var])*(var - var.value)
                 else:
                     tangent = tangent + (var - var.value)*grad_map[var]
@@ -157,32 +159,30 @@ def add_slack(prob, mu):
     var_slack = []
     new_constr = []
     for constr in prob.constraints:
-        row = max([constr.args[0].size[0], constr.args[1].size[0]])
-        col = max([constr.args[0].size[1], constr.args[1].size[1]])
-        if constr.OP_NAME == "<=":
-            var_slack.append(NonNegative(row,col)) # NonNegative slack var
-            left = constr.args[0]
-            right =  constr.args[1] + var_slack[-1]
+        constr_shape = constr.expr.shape
+        if isinstance(constr, NonPos):
+            var_slack.append(cvx.Variable(constr_shape, nonneg=True)) # NonNegative slack var
+            left = constr.expr
+            right = var_slack[-1]
             new_constr.append(left<=right)
-        elif constr.OP_NAME == ">>":
-            var_slack.append(NonNegative(1)) # NonNegative slack var
-            left = constr.args[0] + var_slack[-1]*np.eye(row)
-            right =  constr.args[1]
-            new_constr.append(left>>right)
+        elif isinstance(constr, PSD):
+            var_slack.append(cvx.Variable((), nonneg=True)) # NonNegative slack var
+            left = constr.expr + var_slack[-1]*np.eye(constr_shape[0])
+            new_constr.append(left>>0)
         else: # equality constraint
-            var_slack.append(Variable(row,col))
-            left = constr.args[0]
-            right =  constr.args[1] + var_slack[-1]
+            var_slack.append(cvx.Variable(constr_shape))
+            left = constr.expr
+            right = var_slack[-1]
             new_constr.append(left==right)
     new_cost = prob.objective.args[0]
     if prob.objective.NAME == 'minimize':
         for var in var_slack:
-            new_cost  =  new_cost + norm(var,1)*mu
-        new_prob = Problem(Minimize(new_cost), new_constr)
+            new_cost  =  new_cost + cvx.norm(var,1)*mu
+        new_prob = cvx.Problem(cvx.Minimize(new_cost), new_constr)
     else: # maximize
         for var in var_slack:
-            new_cost  =  new_cost - norm(var,1)*mu
-        new_prob = Problem(Maximize(new_cost), new_constr)
+            new_cost  =  new_cost - cvx.norm(var,1)*mu
+        new_prob = cvx.Problem(cvx.Maximize(new_cost), new_constr)
     return new_prob, var_slack
 
 def proximal_op(prob, var_slack, lambd):
@@ -193,13 +193,26 @@ def proximal_op(prob, var_slack, lambd):
     :param lambd: proximal operator parameter
     :return: a problem with proximal operator
     """
-    new_cost = prob.objective.args[0]
+    new_cost = prob.objective.expr
+    new_constr = prob.constraints
     slack_id = [var.id for var in var_slack]
-    for var in prob.variables():
+
+    #Add proximal variables
+    prob_variables = prob.variables()
+    prob_variables.sort(key = lambda x:x.id)
+    for var in prob_variables:
         # add quadratic terms for all variables that are not slacks
         if not var.id in slack_id:
-            new_cost = new_cost + square(norm(var - var.value,'fro'))/2/lambd
-    prob.objective.args[0] = new_cost
-    return prob
+            if prob.objective.NAME == 'minimize':
+                new_cost = new_cost + cvx.square(cvx.norm(var - var.value,'fro'))/2/lambd
+            else:
+                new_cost = new_cost - cvx.square(cvx.norm(var - var.value,'fro'))/2/lambd
+
+    # Define proximal problem
+    if prob.objective.NAME == 'minimize':
+        new_prob = cvx.Problem(cvx.Minimize(new_cost), new_constr)
+    else: # maximize
+        new_prob = cvx.Problem(cvx.Maximize(new_cost), new_constr)
+    return new_prob
 
 cvx.Problem.register_solve("bcd", bcd)

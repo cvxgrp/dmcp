@@ -13,11 +13,14 @@ class bcdTestCases(BaseTest):
         Checks if a given problem (prob) is dmcp.
         '''
         #Define variables
-        x = cvx.Variable((4,1))
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0] + x[1] + x[2]+ x[3] == 1]
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1 + x2 + x3 + x4 == 1]
         prob = cvx.Problem(obj, constr)
         
         #Assertion test
@@ -28,11 +31,14 @@ class bcdTestCases(BaseTest):
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
         #Define variables
-        x = cvx.Variable((4,1))
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0]+ x[1] + x[2] + x[3] == 1]
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1 + x2 + x3 + x4 == 1]
         prob = cvx.Problem(obj, constr)
 
         #Solve problem
@@ -47,11 +53,14 @@ class bcdTestCases(BaseTest):
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
         #Define variables
-        x = cvx.Variable((4,1))
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0] + x[1] + x[2] + x[3] == 1]
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1 + x2 + x3 + x4 == 1]
         prob = cvx.Problem(obj, constr)
 
         #Solve problem
@@ -66,11 +75,14 @@ class bcdTestCases(BaseTest):
         Checks if the solution method to solve the DMCP problem works to a simple problem.
         '''
         #Define variables
-        x = cvx.Variable((4,1))
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0] + x[1] + x[2] + x[3] == 1]
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1 + x2 + x3 + x4 == 1]
         prob = cvx.Problem(obj, constr)
 
         #Solve problem
@@ -103,32 +115,40 @@ class bcdTestCases(BaseTest):
         Checks if the add slack function works.
         '''
         #Define variables
-        x = cvx.Variable((4,1))
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
+        x = cvx.Variable((4,4))
 
         #Define slack variable inputs
         mu = 5e-3
         slack = cvx.Variable()
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0] + x[1] + x[2] + x[3] == 1]
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1 + x2 + x3 + x4 == 1]
         prob = cvx.Problem(obj, constr)
 
         #Get slacked problem
         outputProb, slackList = bcd.add_slack(prob, mu)
 
         #Define ground truth for testing
-        objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + mu*cvx.abs(slack))
-        constrTest = [x[0] + x[1] + x[2] + x[3] - 1 == slack]
+        objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) + mu*cvx.abs(slack))
+        constrTest = [x1 + x2 + x3 + x4 - 1 == slack]
         probTest = cvx.Problem(objTest, constrTest)        
 
         #Define Initialization for Testing
-        x.value = [1,1,0,0]
+        x1.value = 1
+        x2.value = 1
+        x3.value = 0
+        x4.value = 0
         slack.value = 1/(5e-3)
+        slackList[0].value = 1/(5e-3)
 
         #Assertion Tests
         self.assertEqual(len(slackList), 1)
-        self.assertAlmostEqual(outputProb.objective.value, objTest.value)
+        self.assertAlmostEqual(outputProb.objective.value, probTest.objective.value)
         self.assertAlmostEqual(outputProb.constraints[0].violation(), probTest.constraints[0].violation())
 
     def test_proximal(self):
@@ -136,26 +156,37 @@ class bcdTestCases(BaseTest):
         Checks if proximal objective function works.
         '''
         #Define variables
-        x = cvx.Variable((4,1))
+        x1 = cvx.Variable()
+        x2 = cvx.Variable()
+        x3 = cvx.Variable()
+        x4 = cvx.Variable()
 
         #Define slack variable inputs
         lambd = 1/2
         slack = cvx.Variable()
 
         #Define initialization
-        x.value = [1,1,0,0]
+        x1.value = 1
+        x2.value = 1
+        x3.value = 0
+        x4.value = 0
         slack.value = 1/(5e-3)
 
         #Define problem
-        obj = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]))
-        constr = [x[0] + x[1] + x[2] + x[3] == 1]
+        obj = cvx.Minimize(cvx.abs(x1*x2 + x3*x4))
+        constr = [x1 + x2 + x3 + x4 == 1]
         prob = cvx.Problem(obj, constr)
 
         #Get proximal problem
         outputProb = bcd.proximal_op(prob, [slack], lambd)
 
         #Define ground truth test for proximal objective
-        objTest = cvx.Minimize(cvx.abs(x[0]*x[1] + x[2]*x[3]) + (1/(2*lambd))*cvx.square(cvx.norm(x - x.value, 'fro')))
+        objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) 
+                                + cvx.square(cvx.norm(x1 - x1.value, 'fro'))/2/lambd
+                                + cvx.square(cvx.norm(x2 - x2.value, 'fro'))/2/lambd
+                                + cvx.square(cvx.norm(x3 - x3.value, 'fro'))/2/lambd
+                                + cvx.square(cvx.norm(x4 - x4.value, 'fro'))/2/lambd)
 
         #Assertion Test
         self.assertAlmostEqual(outputProb.objective.value, objTest.value)
+        self.assertEqual(outputProb.objective.expr.name(), objTest.expr.name())
