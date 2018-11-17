@@ -74,7 +74,7 @@ Multi-convex atomic functions
 In order to allow multi-convex functions, we extend the atomic function set of ``CVXPY``.
 The following atoms are allowed to have non-constant expressions in both arguments, while in the dictionary of ``CVXPY`` the first argument must be constant.
 * multiplication: ``expression1 * expression2``
-* elementwise multiplication: ``mul_elemwise(expression1, expression2)``
+* elementwise multiplication: ``cvx.multiply(expression1, expression2)``
 
 Functions and attributes
 ----------------
