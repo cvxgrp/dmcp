@@ -28,17 +28,21 @@ Example
 -------
 The following code uses DMCP to approximately solve a simple multi-convex problem.
 ```
-x_1 = Variable(1)
-x_2 = Variable(1)
-x_3 = Variable(1)
-x_4 = Variable(1)
-objective = Minimize(abs(x_1*x_2+x_3*x_4))
-constraint = [x_1+x_2+x_3+x_4 == 1]
-myprob = Problem(objective, constraint)
+import cvxpy as cvx
+import dmcp
 
-print "minimal sets:", find_minimal_sets(myprob)   # find all minimal sets
+x_1 = cvx.Variable()
+x_2 = cvx.Variable()
+x_3 = cvx.Variable()
+x_4 = cvx.Variable()
+
+objective = cvx.Minimize(abs(x_1*x_2+x_3*x_4))
+constraint = [x_1+x_2+x_3+x_4 == 1]
+myprob = cvx.Problem(objective, constraint)
+
+print "minimal sets:", dmcp.find_minimal_sets(myprob)   # find all minimal sets
 print "problem is DCP:", myprob.is_dcp()   # false
-print "problem is DMCP:", is_dmcp(myprob)  # true
+print "problem is DMCP:", dmcp.is_dmcp(myprob)  # true
 result = myprob.solve(method = 'bcd')
 ```
 The output of the above code is as follows.
@@ -71,7 +75,6 @@ In order to allow multi-convex functions, we extend the atomic function set of `
 The following atoms are allowed to have non-constant expressions in both arguments, while in the dictionary of ``CVXPY`` the first argument must be constant.
 * multiplication: ``expression1 * expression2``
 * elementwise multiplication: ``mul_elemwise(expression1, expression2)``
-* convolution: ``conv(expression1, expression2)``
 
 Functions and attributes
 ----------------
