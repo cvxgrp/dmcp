@@ -6,9 +6,11 @@ It is generally a nonconvex problem.
 DMCP package provides methods to verify multi-convexity and to find minimal sets of variables that have to be fixed for a problem to be convex, as well as an organized heuristic for multi-convex programming.
 The full details of our approach are discussed in [the associated paper](http://stanford.edu/~boyd/papers/dmcp.html). DMCP is built on top of [CVXPY](http://www.cvxpy.org/), a domain-specific language for convex optimization embedded in Python.
 
+DMCP now works on CVXPY 1.0.
+
 Installation
 ------------
-You should first install [CVXPY](https://github.com/cvxgrp/cvxpy/tree/feature/dccp) from its feature/dccp branch.
+You should first install [CVXPY] 1.0.
 
 DMCP rules
 ----------
