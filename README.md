@@ -81,7 +81,7 @@ Functions and attributes
 * ``is_dmcp(problem)`` returns a boolean indicating if an optimization problem satisfies DMCP rules.
 * ``find_minimal_sets(problem)`` analyzes the problem and returns a list of minimal sets of (indexes of) variables.
 The indexes are with respect to the list ``problem.variables()``, namely the variable corresponding to the index ``0`` is
-``problem.variables()[0]``. If the problem is DCP, it returns an empty list.
+``problem.variables()[0]``. If the problem is DCP, it returns an empty list. ``is_all = True`` will generate all minimal sets.
 * ``fix(obj, fix_vars)`` returns a new expression or a new problem with the variables in the list ``fix_vars`` replaced with parameters of the same dimensions and signs. The ``obj`` can either be an expression or a problem.
 
 Constructing and solving problems
