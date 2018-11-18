@@ -6,9 +6,11 @@ It is generally a nonconvex problem.
 DMCP package provides methods to verify multi-convexity and to find minimal sets of variables that have to be fixed for a problem to be convex, as well as an organized heuristic for multi-convex programming.
 The full details of our approach are discussed in [the associated paper](http://stanford.edu/~boyd/papers/dmcp.html). DMCP is built on top of [CVXPY](http://www.cvxpy.org/), a domain-specific language for convex optimization embedded in Python.
 
+DMCP now works on CVXPY 1.0.
+
 Installation
 ------------
-You should first install [CVXPY](https://github.com/cvxgrp/cvxpy/tree/feature/dccp) from its feature/dccp branch.
+You should first install [CVXPY] 1.0.
 
 DMCP rules
 ----------
@@ -26,18 +28,22 @@ Example
 -------
 The following code uses DMCP to approximately solve a simple multi-convex problem.
 ```
-x_1 = Variable(1)
-x_2 = Variable(1)
-x_3 = Variable(1)
-x_4 = Variable(1)
-objective = Minimize(abs(x_1*x_2+x_3*x_4))
-constraint = [x_1+x_2+x_3+x_4 == 1]
-myprob = Problem(objective, constraint)
+import cvxpy as cvx
+import dmcp
 
-print "minimal sets:", find_minimal_sets(myprob)   # find all minimal sets
+x_1 = cvx.Variable()
+x_2 = cvx.Variable()
+x_3 = cvx.Variable()
+x_4 = cvx.Variable()
+
+objective = cvx.Minimize(abs(x_1*x_2+x_3*x_4))
+constraint = [x_1+x_2+x_3+x_4 == 1]
+myprob = cvx.Problem(objective, constraint)
+
+print "minimal sets:", dmcp.find_minimal_sets(myprob)   # find all minimal sets
 print "problem is DCP:", myprob.is_dcp()   # false
-print "problem is DMCP:", is_dmcp(myprob)  # true
-result = myprob.solve(method = 'dmcp')
+print "problem is DMCP:", dmcp.is_dmcp(myprob)  # true
+result = myprob.solve(method = 'bcd')
 ```
 The output of the above code is as follows.
 ```
@@ -58,7 +64,7 @@ x_1.value = 1.2
 x_2.value = -3
 x_3.value = 4
 x_4.value = 0.15
-result = myprob.solve(method = 'dmcp')
+result = myprob.solve(method = 'bcd')
 ```
 
 More examples can be found [here] (https://github.com/cvxgrp/dmcp/tree/master/examples).
@@ -68,23 +74,22 @@ Multi-convex atomic functions
 In order to allow multi-convex functions, we extend the atomic function set of ``CVXPY``.
 The following atoms are allowed to have non-constant expressions in both arguments, while in the dictionary of ``CVXPY`` the first argument must be constant.
 * multiplication: ``expression1 * expression2``
-* elementwise multiplication: ``mul_elemwise(expression1, expression2)``
-* convolution: ``conv(expression1, expression2)``
+* elementwise multiplication: ``cvx.multiply(expression1, expression2)``
 
 Functions and attributes
 ----------------
 * ``is_dmcp(problem)`` returns a boolean indicating if an optimization problem satisfies DMCP rules.
 * ``find_minimal_sets(problem)`` analyzes the problem and returns a list of minimal sets of (indexes of) variables.
 The indexes are with respect to the list ``problem.variables()``, namely the variable corresponding to the index ``0`` is
-``problem.variables()[0]``. If the problem is DCP, it returns an empty list.
+``problem.variables()[0]``. If the problem is DCP, it returns an empty list. ``is_all = True`` will generate all minimal sets.
 * ``fix(obj, fix_vars)`` returns a new expression or a new problem with the variables in the list ``fix_vars`` replaced with parameters of the same dimensions and signs. The ``obj`` can either be an expression or a problem.
 
 Constructing and solving problems
 ---------------------------------
 The components of the variable, the objective, and the constraints are constructed using standard CVXPY syntax. Once the user has constructed a problem object, they can apply the following solve method:
-* ``problem.solve(method = 'dmcp')`` applies the solving algorithm with proximal operators, and returns the number of iterations, and the maximum value of the slack variables. The solution to every variable is in its ``value`` field.
-* ``problem.solve(method = 'dmcp', update = 'minimize')`` applies the solving method without proximal operators.
-* ``problem.solve(method = 'dmcp', update = 'prox_linear')`` applies the solving method with prox-linear operators.
+* ``problem.solve(method = 'bcd')`` applies the solving algorithm with proximal operators, and returns the number of iterations, and the maximum value of the slack variables. The solution to every variable is in its ``value`` field.
+* ``problem.solve(method = 'bcd', update = 'minimize')`` applies the solving method without proximal operators.
+* ``problem.solve(method = 'bcd', update = 'prox_linear')`` applies the solving method with prox-linear operators.
 
 Additional arguments can be used to specify the parameters.
 

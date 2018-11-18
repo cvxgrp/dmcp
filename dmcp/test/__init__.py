@@ -4,5 +4,3 @@ from __future__ import print_function
 
 __author__ = 'Xinyue'
 __version___ = "0.1.3"
-
-import dmcp.bcd

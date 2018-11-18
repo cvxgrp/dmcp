@@ -1,10 +1,15 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 __author__ = 'Xinyue'
 
-from fix import fix
-from fix import fix_prob
+from dmcp.fix import fix
+from dmcp.utils import is_atom_multiconvex
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
-from cvxpy import *
+from cvxpy.expressions.variable import Variable
+import cvxpy as cvx
 
 def find_minimal_sets(prob, is_all = False):
     """
@@ -21,8 +26,10 @@ def find_minimal_sets(prob, is_all = False):
     Vars = prob.variables()
     for maxset in maxsets:
         maxset_id = [var.id for var in maxset]
+        maxset_id.sort()
         fix_id = [var.id for var in Vars if var.id not in maxset_id]
         V = [var.id for var in Vars]
+        V.sort()
         fix_idx = [V.index(varid) for varid in fix_id]
         result.append(fix_idx)
     return result
@@ -41,18 +48,23 @@ def find_MIS(prob, is_all):
     node_num = len(V)
     g = np.zeros((node_num,node_num)) # table of edges
     varid = [var.id for var in V]
-    stack, g = search_conflict_l(prob.objective.args[0],[],varid,g)
+    varid.sort()
+    stack, g = search_conflict_l(prob.objective.expr,[],varid,g)
     for con in prob.constraints:
-        stack, g = search_conflict_l(con.args[0] + con.args[1],[],varid,g)
+        stack, g = search_conflict_l(-con.expr,[],varid,g)
     # find all independent sets of the conflict graph
     i_subsets = find_all_iset(V,g)
+
     # sort all independent sets
     subsets_len = [len(subset) for subset in i_subsets]
     sort_idx = np.argsort(subsets_len) # sort the subsets by card
+    
     # check all sorted sets
     result = []
     U = [] # union of all collected vars
-    for count in range(1,len(sort_idx)+1): # collecting from a subset with the largest cardinality
+
+    # collecting from a subset with the largest cardinality
+    for count in range(1,len(sort_idx)+1):
         flag = 1
         for subs in result:
             if is_subset(i_subsets[sort_idx[-count]], subs): # the current one is a subset of a previously collected one
@@ -61,12 +73,13 @@ def find_MIS(prob, is_all):
         if flag:
             set_id = [var.id for var in i_subsets[sort_idx[-count]]]
             fix_set = [var for var in V if var.id not in set_id]
-            if fix_prob(prob, fix_set).is_dcp():
+            if fix(prob, fix_set).is_dcp():
                 result.append(i_subsets[sort_idx[-count]])
                 U = union(U, i_subsets[sort_idx[-count]])
-        if not is_all:
-            if is_subset(V,U): # the collected vars cover all vars
-                break
+        
+        # break if the collected vars cover all vars
+        if not is_all and is_subset(V,U):
+            break
     return result
 
 def find_all_iset(V,g):
@@ -77,12 +90,16 @@ def find_all_iset(V,g):
     :return: a list of independent subsets
     """
     subsets = find_all_subsets(V)
-    result = [[]]
+    result = []
     V_id = [var.id for var in V]
+    V_id.sort()
     for subset in subsets:
         subset_id = [var.id for var in subset]
+        subset_id.sort()
         subset_ind = [V_id.index(i) for i in subset_id]
-        if is_independent(subset_ind, g):
+        var_set_ind = [i for i in range(len(V_id))]
+        set_complement = list(set(var_set_ind).difference(set(subset_ind)))
+        if is_independent(set_complement, g) and not set_complement == []:
             result.append(subset)
     return result
 
@@ -107,12 +124,12 @@ def find_all_subsets(s):
     subsets = []
     N = np.power(2,len(s))
     for n in range(N-1): # each number represent a subset
-        set = [] # the subset corresponding to n
+        subset = [] # the subset corresponding to n
         binary_ind = np.binary_repr(n+1) # binary
         for idx in range(1,len(binary_ind)+1): # each bit of the binary number
             if binary_ind[-idx] == '1': # '1' means to add the element corresponding to that bit
-                set.append(s[-idx])
-        subsets.append(set)
+                subset.append(s[-idx])
+        subsets.append(subset)
     return subsets
 
 def search_conflict_l(expr,stack,V,t):
@@ -121,7 +138,7 @@ def search_conflict_l(expr,stack,V,t):
     :param expr: an expression
     :param stack: stack of lists
     :param V: a list of id numbers of variables
-    :param t: graph
+    :param t: graph corresponding to the variables that can't be optimized together
     :return:
     '''
     if isinstance(expr,Leaf):
@@ -134,7 +151,7 @@ def search_conflict_l(expr,stack,V,t):
         for arg in expr.args:
             stack,t = search_conflict_l(arg,stack,V,t)
             args_num += 1
-        if not expr.is_atom_multiconvex():        # at a convex node
+        if not is_atom_multiconvex(expr):        # at a convex node
             while args_num>1:
                 stack[-2] = stack[-1] + stack[-2] # merge lists of its arguments
                 args_num -= 1
@@ -152,6 +169,33 @@ def search_conflict_l(expr,stack,V,t):
             stack = stack[0:-1]
     return stack,t
 
+def union(set1, set2):
+    """
+    the union of set1 and set2
+    :param set1: a list of vars
+    :param set2: a list of vars
+    :return: a list of vars with no duplicates
+    """
+    return list(set(set1+set2))
+
+def is_subset(var_set1, var_set2):
+    """
+    Checks if var_set2 is a subset of var_set1
+    :param var_set1: a list of variables
+    :param var_set2: a list of variables
+    :return: a boolean indicating if var_set1 is a subset of var_set2
+    """
+    if var_set2 == []:
+        return False
+    if var_set1 == []:
+        return True
+    var_set1 = list(set(var_set1)) #remove duplicates
+    var_set2 = list(set(var_set2))
+    if len(var_set2) == len(list(set(var_set1+ var_set2))):
+        return True
+    else:
+        return False
+
 def search_conflict(expr,t,varid):
     """
     search conflict variables in an expression
@@ -162,7 +206,7 @@ def search_conflict(expr,t,varid):
     """
     for arg in expr.args:
         t = search_conflict(arg,t,varid)
-    if expr.is_atom_multiconvex() and not expr.args[0].is_constant() and not expr.args[1].is_constant():
+    if is_atom_multiconvex(expr) and not expr.args[0].is_constant() and not expr.args[1].is_constant():
         id1 = [var.id for var in expr.args[0].variables()] # var ids in left child node
         id2 = [var.id for var in expr.args[1].variables()]
         index1 = [varid.index(vi) for vi in id1] # table index in left child node
@@ -180,31 +224,12 @@ def is_intersect(set1, set2):
     :param set2: a list of vars
     :return: boolean
     """
-    #id1 = [var.id for var in set1]
-    #id2 = [var.id for var in set2]
-    #flag = 0
-    #for id_1 in id1:
-    #    for id_2 in id2:
-    #        if id_1 == id_2:
-    #            flag = 1
-    #            return flag
-    #return flag
     set1 = list(set(set1))
     set2 = list(set(set2))
     if len(set1)+len(set2) == len(list(set(set1+set2))):
         return False
     else:
         return True
-
-def union(set1, set2):
-    """
-    the union of set1 and set2
-    :param set1: a list of vars
-    :param set2: a list of vars
-    :return: a list of vars with no duplicates
-    """
-    return list(set(set1+set2))
-
 
 def find_maxset_prob(prob,vars,current=[]):
     """
@@ -225,7 +250,7 @@ def find_maxset_prob(prob,vars,current=[]):
         if all([not is_subset(vars_active, current_set) for current_set in current]):
             vars_active_id = [var.id for var in vars_active]
             fix_vars_temp = [var for var in prob.variables() if not var.id in vars_active_id]
-            if fix_prob(prob,fix_vars_temp).is_dcp() == True:
+            if fix(prob,fix_vars_temp).is_dcp() == True:
                 result.append(vars_active) # find a subset
                 current.append(vars_active)
             else:
@@ -296,23 +321,6 @@ def find_dcp_set(expr, vars):
             for var_set in result_temp:
                 result.append(var_set)
         return result
-
-def is_subset(var_set1, var_set2):
-    """
-    :param var_set1: a list of variables
-    :param var_set2: a list of variables
-    :return: a boolean indicating if var_set1 is a subset of var_set2
-    """
-    if var_set2 == []:
-        return False
-    if var_set1 == []:
-        return True
-    var_set1 = list(set(var_set1)) #remove duplicates
-    var_set2 = list(set(var_set2))
-    if len(var_set2) == len(list(set(var_set1+ var_set2))):
-        return True
-    else:
-        return False
 
 def erase(vars,var):
     """
