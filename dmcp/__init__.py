@@ -3,6 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 __author__ = 'Xinyue'
-__version___ = "0.1.3"
+__version___ = "1.0.0"
 
 import dmcp.bcd
