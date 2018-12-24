@@ -39,7 +39,6 @@ def fix(obj, fix_vars):
             para.value = var.value
             param_list.append(para)
     
-    
     if isinstance(obj,Expression):
         return fix_expr(obj,fix_vars, param_list)
     elif isinstance(obj,Problem):
