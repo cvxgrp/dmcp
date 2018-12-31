@@ -5,7 +5,7 @@ from __future__ import print_function
 from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
-from dmcp.fix import fix
+from dmcp import fix
 
 class fixTestCases(BaseTest):  
     def setUp(self):

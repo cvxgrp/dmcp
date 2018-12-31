@@ -94,6 +94,7 @@ def fix_expr(expr, fix_var, param_list):
         Expression
     """
     fix_var_id = [var.id for var in fix_var]
+    fix_var_id.sort()
     if isinstance(expr, Variable) and expr.id in fix_var_id:
         param_index = fix_var_id.index(expr.id)
         param = param_list[param_index]
