@@ -28,17 +28,21 @@ def fix(obj, fix_vars):
             para = cvx.Parameter(shape = var.shape, nonneg=True)
             if var.value is not None:
                 para.value = abs(var.value)
+                para.id = var.id
             param_list.append(para)
         elif var.sign == "NONPOSITIVE":
             para = cvx.Parameter(shape = var.shape, nonpos=True)
             if var.value is not None:
                 para.value = -abs(var.value)
+                para.id = var.id
             param_list.append(para)
         else:
             para = cvx.Parameter(shape = var.shape)
             para.value = var.value
+            para.id = var.id
             param_list.append(para)
     
+    param_list.sort(key = lambda x:x.id)
     if isinstance(obj,Expression):
         return fix_expr(obj,fix_vars, param_list)
     elif isinstance(obj,Problem):
@@ -105,4 +109,4 @@ def fix_expr(expr, fix_var, param_list):
         new_args = []
         for arg in expr.args:
             new_args.append(fix_expr(arg, fix_var, param_list))
-        return expr.copy(new_args)
+        return expr.copy(args=new_args)
