@@ -5,7 +5,7 @@ from __future__ import print_function
 from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
-import dmcp.find_set as find_set
+from dmcp import find_set
 
 class findMinimalTestCases(BaseTest):
     def setUp(self):

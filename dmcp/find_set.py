@@ -4,8 +4,8 @@ from __future__ import print_function
 
 __author__ = 'Xinyue'
 
-from dmcp.fix import fix
-from dmcp.utils import is_atom_multiconvex
+from dmcp import fix
+from dmcp import is_atom_multiconvex
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
 from cvxpy.expressions.variable import Variable

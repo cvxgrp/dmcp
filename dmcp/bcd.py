@@ -5,9 +5,9 @@ from __future__ import print_function
 __author__ = 'Xinyue'
 
 import cvxpy as cvx
-from dmcp.initial import rand_initial
-from dmcp.find_set import find_minimal_sets
-from dmcp.fix import fix
+from dmcp import rand_initial
+from dmcp import find_minimal_sets
+from dmcp import fix
 import numpy as np
 from cvxpy.constraints.nonpos import NonPos
 from cvxpy.constraints.zero import Zero

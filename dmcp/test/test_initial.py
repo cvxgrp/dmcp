@@ -5,7 +5,7 @@ from __future__ import print_function
 from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
-import dmcp.initial as initial
+import dmcp
 
 class initialTestCases(BaseTest):
     def setUp(self):
@@ -28,7 +28,7 @@ class initialTestCases(BaseTest):
         Test whether or not the rand_initial function initializes the variables
         '''
         #Create random initialization
-        initial.rand_initial(self.prob)
+        dmcp.rand_initial(self.prob)
 
         #Check if problem variables are initialized
         values = [var.value for var in self.prob.variables()]
@@ -39,7 +39,7 @@ class initialTestCases(BaseTest):
         Test whether ot not the rand_initial_project function intializaes the variables
         with projects in place.
         '''
-        initial.rand_initial_proj(self.prob)
+        dmcp.rand_initial_proj(self.prob)
 
         #Check if problem variables are initialized
         values = [var.value for var in self.prob.variables()]

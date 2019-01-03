@@ -5,7 +5,7 @@ from __future__ import print_function
 from dmcp.test.base_test import BaseTest
 import numpy as np
 import cvxpy as cvx
-import dmcp.bcd as bcd
+import dmcp
 
 class bcdTestCases(BaseTest):    
     def test_dmcp(self):
@@ -24,7 +24,7 @@ class bcdTestCases(BaseTest):
         prob = cvx.Problem(obj, constr)
         
         #Assertion test
-        self.assertEqual(bcd.is_dmcp(prob), True)
+        self.assertEqual(dmcp.is_dmcp(prob), True)
 
     def test_bcdProximal(self):
         '''
@@ -107,7 +107,7 @@ class bcdTestCases(BaseTest):
         z.value = np.reshape(np.array([1,2,3,4,5]), (1,5))
 
         #Linearize
-        lin = bcd.linearize(expr)
+        lin = dmcp.linearize(expr)
 
         #Assertion tests
         self.assertEqual(lin.shape, (1,5))
@@ -134,7 +134,7 @@ class bcdTestCases(BaseTest):
         prob = cvx.Problem(obj, constr)
 
         #Get slacked problem
-        outputProb, slackList = bcd.add_slack(prob, mu)
+        outputProb, slackList = dmcp.add_slack(prob, mu)
 
         #Define ground truth for testing
         objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) + mu*cvx.abs(slack))
@@ -181,7 +181,7 @@ class bcdTestCases(BaseTest):
         prob = cvx.Problem(obj, constr)
 
         #Get proximal problem
-        outputProb = bcd.proximal_op(prob, [slack], lambd)
+        outputProb = dmcp.proximal_op(prob, [slack], lambd)
 
         #Define ground truth test for proximal objective
         objTest = cvx.Minimize(cvx.abs(x1*x2 + x3*x4) 
