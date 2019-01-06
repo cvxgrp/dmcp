@@ -13,14 +13,14 @@ from cvxpy.constraints.nonpos import NonPos
 from cvxpy.constraints.zero import Zero
 from cvxpy.constraints.psd import PSD
 
-def is_dmcp(prob):
+def is_dmcp(obj):
     """
-    :param prob: a problem
-    :return: a boolean indicating if the problem is DMCP
+    :param obj: an obj
+    :return: a boolean indicating if the obj (Function, Expression, Variable) is DMCP
     """
-    for var in prob.variables():
-        fix_var = [avar for avar in prob.variables() if not avar.id == var.id]
-        if not fix(prob,fix_var).is_dcp():
+    for var in obj.variables():
+        fix_var = [avar for avar in obj.variables() if not avar.id == var.id]
+        if not fix(obj,fix_var).is_dcp():
             return False
     return True
 
