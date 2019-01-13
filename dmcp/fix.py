@@ -22,23 +22,25 @@ def fix(obj, fix_vars):
 
     # Create list of parameters
     variable_list = obj.variables()
+    variable_list.sort(key = lambda x:x.id)
     param_list = []
     for var in variable_list:
         if var.sign == "NONNEGATIVE":
             para = cvx.Parameter(shape = var.shape, nonneg=True)
             if var.value is not None:
                 para.value = abs(var.value)
-                para.id = var.id
+            para.id = var.id
             param_list.append(para)
         elif var.sign == "NONPOSITIVE":
             para = cvx.Parameter(shape = var.shape, nonpos=True)
             if var.value is not None:
                 para.value = -abs(var.value)
-                para.id = var.id
+            para.id = var.id
             param_list.append(para)
         else:
             para = cvx.Parameter(shape = var.shape)
-            para.value = var.value
+            if var.value is not None:
+                para.value = var.value
             para.id = var.id
             param_list.append(para)
     
@@ -100,8 +102,7 @@ def fix_expr(expr, fix_var, param_list):
     fix_var_id = [var.id for var in fix_var]
     fix_var_id.sort()
     if isinstance(expr, Variable) and expr.id in fix_var_id:
-        param_index = fix_var_id.index(expr.id)
-        param = param_list[param_index]
+        param = next((temp_param for temp_param in param_list if temp_param.id == expr.id), None)
         return param
     elif len(expr.args) == 0:
         return expr
