@@ -54,8 +54,10 @@ def get_variables(data_dim, num_classes, num_examples):
     '''
     # Vector of mean variables for each class
     mean_vector = np.asmatrix(np.zeros((num_classes,1), dtype=object))
+    mean_vector2 = np.asmatrix(np.zeros((num_classes,1), dtype=object))
     for i in range(num_classes):
         mean_vector[i] = cvx.Variable((data_dim))
+        mean_vector2[i] = cvx.Variable((data_dim))
 
     # Vector of inverse covariance matrices for each class
     precision_vector = np.asmatrix(np.zeros((num_classes,1), dtype=object))
@@ -69,11 +71,13 @@ def get_variables(data_dim, num_classes, num_examples):
 
     # Define categorical distribution conditional probabilities
     probability_matrix = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
+    probability_matrix2 = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
     for i in range(num_examples):
         for j in range(num_classes):
             probability_matrix[i,j] = cvx.Variable((1))
+            probability_matrix2[i,j] = cvx.Variable((1))
     
-    variable_dict = {'mean': mean_vector, 'precision': precision_vector, 'categorical': categorical_vector, 'conditional': probability_matrix}
+    variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'conditional': probability_matrix, 'conditional2': probability_matrix2}
     return variable_dict
 
 
@@ -105,14 +109,16 @@ def get_objective(partitioned_set, variable_dict, data_dim, num_classes, num_exa
     log_probability_matrix = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object)) # The matrix of log categorical distribution conditional probabilities
     for i in range(num_examples):
         for j in range(num_classes):
-            log_normal_matrix[i,j] = (-1/2)*((np.array(train_set[i]) - variable_dict['mean'][j,0]).T)*variable_dict['precision'][j,0]*(np.array(train_set[i]) - variable_dict['mean'][j,0])
+            log_normal_matrix[i,j] = (-1/2)*((np.array(train_set[i]) - variable_dict['mean'][j,0]).T)*variable_dict['precision'][j,0]*(np.array(train_set[i]) - variable_dict['mean2'][j,0])
             log_probability_matrix[i,j] = cvx.log(variable_dict['conditional'][i,j])
     
     # Collect each term of the objective sum
     objective_array = []
     for i in range(num_examples):
         for j in range(num_classes):
-            objective_array.append(variable_dict['conditional'][i,j]*(precision_log_det_matrix[j,0] + log_normal_matrix[i,j] + log_categorical_matrix[j,0] - log_probability_matrix[i,j]))
+            hello = variable_dict['conditional2'][i,j]*(precision_log_det_matrix[j,0] + log_normal_matrix[i,j] + log_categorical_matrix[j,0] - log_probability_matrix[i,j])
+            print("Hi", dmcp.is_dmcp(hello))
+            objective_array.append(hello)
     
     # Define objective
     objective = cvx.Maximize(sum(objective_array))
@@ -147,6 +153,15 @@ def get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_e
             conditional_array.append(variable_dict['conditional'][i,j])
         constraints.append(sum(conditional_array) == 1)
     
+    # Set mean and mean 2 to be equal
+    for i in range(num_classes):
+        constraints.append(variable_dict['mean'][i,0] == variable_dict['mean2'][i,0])
+    
+    # Set conditional matrices to be equal
+    for i in range(num_examples):
+        for j in range(num_classes):
+            constraints.append(variable_dict['conditional2'][i,j] == variable_dict['conditional'][i,j])
+
     return constraints
 
 
@@ -155,6 +170,6 @@ variable_dict = get_variables(data_dim, num_classes, num_examples)
 objective = get_objective(partitioned_set, variable_dict, data_dim, num_classes, num_examples)
 constraints = get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_examples)
 problem = cvx.Problem(objective)
-print(objective)
-print([const.name() for const in constraints])
-print(dmcp.is_dmcp(problem))
+print([dmcp.is_dmcp(const.expr) for const in constraints])
+print(dmcp.is_dmcp(objective.expr))
+# print(dmcp.is_dmcp(problem))
