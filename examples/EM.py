@@ -67,7 +67,7 @@ def get_variables(data_dim, num_classes, num_examples):
     # Vector of categorical distribution parameters for each class
     categorical_vector = np.asmatrix(np.zeros((num_classes,1), dtype=object))
     for i in range(num_classes):
-        categorical_vector[i] = cvx.Variable((1), nonneg=True)
+        categorical_vector[i] = cvx.Variable(1, nonneg=True)
 
     # Define categorical distribution conditional probabilities
     probability_matrix = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
@@ -77,7 +77,7 @@ def get_variables(data_dim, num_classes, num_examples):
             probability_matrix[i,j] = cvx.Variable(1, nonneg=True)
             probability_matrix2[i,j] = cvx.Variable(1, nonneg=True)
     
-    variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'conditional': probability_matrix, 'conditional2': probability_matrix2}
+    variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'inverse_conditional': probability_matrix, 'conditional2': probability_matrix2}
     return variable_dict
 
 
@@ -110,15 +110,15 @@ def get_objective(partitioned_set, variable_dict, data_dim, num_classes, num_exa
     for i in range(num_examples):
         for j in range(num_classes):
             log_normal_matrix[i,j] = (-1/2)*((np.array(train_set[i]) - variable_dict['mean'][j,0]).T)*variable_dict['precision'][j,0]*(np.array(train_set[i]) - variable_dict['mean2'][j,0])
-            log_probability_matrix[i,j] = cvx.log(variable_dict['conditional'][i,j])
+            log_probability_matrix[i,j] = cvx.log(variable_dict['inverse_conditional'][i,j])
     
     # Collect each term of the objective sum
     objective_array = []
     for i in range(num_examples):
         for j in range(num_classes):
-            hello = variable_dict['conditional2'][i,j]*(precision_log_det_matrix[j,0] + log_normal_matrix[i,j] + log_categorical_matrix[j,0] - log_probability_matrix[i,j])
-            objective_array.append(hello)
-    
+            dummy = (variable_dict['conditional2'][i,j])*(precision_log_det_matrix[j,0] + log_normal_matrix[i,j] + log_categorical_matrix[j,0] + log_probability_matrix[i,j])
+            objective_array.append(dummy)
+
     # Define objective
     objective = cvx.Maximize(sum(objective_array))
     return objective
@@ -148,8 +148,8 @@ def get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_e
     for i in range(num_examples):
         conditional_array = []
         for j in range(num_classes):
-            constraints.append(variable_dict['conditional'][i,j] >= 0)
-            conditional_array.append(variable_dict['conditional'][i,j])
+            constraints.append(variable_dict['conditional2'][i,j] >= 0)
+            conditional_array.append(variable_dict['conditional2'][i,j])
         constraints.append(sum(conditional_array) == 1)
     
     # Set mean and mean 2 to be equal
@@ -159,7 +159,7 @@ def get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_e
     # Set conditional matrices to be equal
     for i in range(num_examples):
         for j in range(num_classes):
-            constraints.append(variable_dict['conditional2'][i,j] == variable_dict['conditional'][i,j])
+            constraints.append(variable_dict['conditional2'][i,j]*variable_dict['inverse_conditional'][i,j] == 1)
 
     return constraints
 
@@ -168,10 +168,10 @@ partitioned_set, data_dim, num_classes, num_examples = get_data(train_percent=0.
 variable_dict = get_variables(data_dim, num_classes, num_examples)
 objective = get_objective(partitioned_set, variable_dict, data_dim, num_classes, num_examples)
 constraints = get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_examples)
-problem = cvx.Problem(objective)
-fix_var = [var[0,0] for var in variable_dict.values() if not var == variable_dict['conditional']]
+problem = cvx.Problem(objective, constraints)
+fix_var = [var[0,0] for var in variable_dict.values() if not var == variable_dict['inverse_conditional']]
 fix_var2 = [var[0,0] for var in variable_dict.values() if not var == variable_dict['precision']]
-print("Variable ID of Conditional is", variable_dict['conditional'][0,0].id)
+print("Variable ID of Conditional is", variable_dict['inverse_conditional'][0,0].id)
 print("Variable ID of Precision is", variable_dict['precision'][0,0].id)
 print("Fix_var is", [var.id for var in fix_var])
 print("Conditional Is_DMCP", dmcp.is_dmcp(dmcp.fix(problem, fix_var)))
@@ -179,4 +179,5 @@ print("Conditional Is_DCP", dmcp.fix(problem, fix_var).is_dcp())
 print("Precision Is_DMCP", dmcp.is_dmcp(dmcp.fix(problem, fix_var2)))
 print("Precision Is_DCP", dmcp.fix(problem, fix_var2).is_dcp())
 print("Objective DMCP", dmcp.is_dmcp(objective.expr))
-print(dmcp.is_dmcp(problem))
+print("Is Problem DMCP? ", dmcp.is_dmcp(problem))
+print("Number of variables: ", len(problem.variables()))
