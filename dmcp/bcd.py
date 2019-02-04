@@ -20,6 +20,7 @@ def is_dmcp(obj):
     """
     for var in obj.variables():
         fix_var = [avar for avar in obj.variables() if not avar.id == var.id]
+        fix_var.sort(key = lambda x:x.id)
         if not fix(obj,fix_var).is_dcp():
             return False
     return True

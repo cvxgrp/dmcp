@@ -67,15 +67,15 @@ def get_variables(data_dim, num_classes, num_examples):
     # Vector of categorical distribution parameters for each class
     categorical_vector = np.asmatrix(np.zeros((num_classes,1), dtype=object))
     for i in range(num_classes):
-        categorical_vector[i] = cvx.Variable((1))
+        categorical_vector[i] = cvx.Variable((1), nonneg=True)
 
     # Define categorical distribution conditional probabilities
     probability_matrix = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
     probability_matrix2 = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
     for i in range(num_examples):
         for j in range(num_classes):
-            probability_matrix[i,j] = cvx.Variable((1))
-            probability_matrix2[i,j] = cvx.Variable((1))
+            probability_matrix[i,j] = cvx.Variable(1, nonneg=True)
+            probability_matrix2[i,j] = cvx.Variable(1, nonneg=True)
     
     variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'conditional': probability_matrix, 'conditional2': probability_matrix2}
     return variable_dict
@@ -117,7 +117,6 @@ def get_objective(partitioned_set, variable_dict, data_dim, num_classes, num_exa
     for i in range(num_examples):
         for j in range(num_classes):
             hello = variable_dict['conditional2'][i,j]*(precision_log_det_matrix[j,0] + log_normal_matrix[i,j] + log_categorical_matrix[j,0] - log_probability_matrix[i,j])
-            print("Hi", dmcp.is_dmcp(hello))
             objective_array.append(hello)
     
     # Define objective
@@ -170,6 +169,14 @@ variable_dict = get_variables(data_dim, num_classes, num_examples)
 objective = get_objective(partitioned_set, variable_dict, data_dim, num_classes, num_examples)
 constraints = get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_examples)
 problem = cvx.Problem(objective)
-print([dmcp.is_dmcp(const.expr) for const in constraints])
-print(dmcp.is_dmcp(objective.expr))
-# print(dmcp.is_dmcp(problem))
+fix_var = [var[0,0] for var in variable_dict.values() if not var == variable_dict['conditional']]
+fix_var2 = [var[0,0] for var in variable_dict.values() if not var == variable_dict['precision']]
+print("Variable ID of Conditional is", variable_dict['conditional'][0,0].id)
+print("Variable ID of Precision is", variable_dict['precision'][0,0].id)
+print("Fix_var is", [var.id for var in fix_var])
+print("Conditional Is_DMCP", dmcp.is_dmcp(dmcp.fix(problem, fix_var)))
+print("Conditional Is_DCP", dmcp.fix(problem, fix_var).is_dcp())
+print("Precision Is_DMCP", dmcp.is_dmcp(dmcp.fix(problem, fix_var2)))
+print("Precision Is_DCP", dmcp.fix(problem, fix_var2).is_dcp())
+print("Objective DMCP", dmcp.is_dmcp(objective.expr))
+print(dmcp.is_dmcp(problem))

@@ -28,22 +28,27 @@ def fix(obj, fix_vars):
         if var.value is not None:
             if var.value >= 0:
                 para = cvx.Parameter(shape = var.shape, nonneg=True)
-                if var.value is not None:
-                    para.value = abs(var.value)
+                para.value = abs(var.value)
                 para.id = var.id
                 param_list.append(para)
             else:
                 para = cvx.Parameter(shape = var.shape, nonpos=True)
-                if var.value is not None:
-                    para.value = -abs(var.value)
+                para.value = -abs(var.value)
                 para.id = var.id
                 param_list.append(para)
         else:
-            para = cvx.Parameter(shape = var.shape, nonneg=True)
-            if var.value is not None:
-                para.value = var.value
-            para.id = var.id
-            param_list.append(para)
+            if var.sign == 'NONNEGATIVE':
+                para = cvx.Parameter(shape = var.shape, nonneg=True)
+                para.id = var.id
+                param_list.append(para)
+            elif var.sign == 'NONPOSITIVE':
+                para = cvx.Parameter(shape = var.shape, nonpos=True)
+                para.id = var.id
+                param_list.append(para)
+            else:
+                para = cvx.Parameter(shape = var.shape)
+                para.id = var.id
+                param_list.append(para)
     
     param_list.sort(key = lambda x:x.id)
     if isinstance(obj,Expression):
