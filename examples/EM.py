@@ -77,7 +77,7 @@ def get_variables(data_dim, num_classes, num_examples):
             probability_matrix[i,j] = cvx.Variable(1, nonneg=True)
             inverse_probability_matrix[i,j] = cvx.Variable(1, nonneg=True)
     
-    variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'conditional': probability_matrix, 'inverse_conditional': probability_matrix}
+    variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'conditional': probability_matrix, 'inverse_conditional': inverse_probability_matrix}
     return variable_dict
 
 
