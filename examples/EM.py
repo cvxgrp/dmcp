@@ -71,13 +71,13 @@ def get_variables(data_dim, num_classes, num_examples):
 
     # Define categorical distribution conditional probabilities
     probability_matrix = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
-    probability_matrix2 = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
+    inverse_probability_matrix = np.asmatrix(np.zeros((num_examples, num_classes), dtype=object))
     for i in range(num_examples):
         for j in range(num_classes):
             probability_matrix[i,j] = cvx.Variable(1, nonneg=True)
-            probability_matrix2[i,j] = cvx.Variable(1, nonneg=True)
+            inverse_probability_matrix[i,j] = cvx.Variable(1, nonneg=True)
     
-    variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'inverse_conditional': probability_matrix, 'conditional2': probability_matrix2}
+    variable_dict = {'mean': mean_vector, 'mean2': mean_vector2, 'precision': precision_vector, 'categorical': categorical_vector, 'conditional': probability_matrix, 'inverse_conditional': probability_matrix}
     return variable_dict
 
 
@@ -116,7 +116,7 @@ def get_objective(partitioned_set, variable_dict, data_dim, num_classes, num_exa
     objective_array = []
     for i in range(num_examples):
         for j in range(num_classes):
-            dummy = (variable_dict['conditional2'][i,j])*(precision_log_det_matrix[j,0] + log_normal_matrix[i,j] + log_categorical_matrix[j,0] + log_probability_matrix[i,j])
+            dummy = (variable_dict['conditional'][i,j])*(precision_log_det_matrix[j,0] + log_normal_matrix[i,j] + log_categorical_matrix[j,0] + log_probability_matrix[i,j])
             objective_array.append(dummy)
 
     # Define objective
@@ -148,8 +148,8 @@ def get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_e
     for i in range(num_examples):
         conditional_array = []
         for j in range(num_classes):
-            constraints.append(variable_dict['conditional2'][i,j] >= 0)
-            conditional_array.append(variable_dict['conditional2'][i,j])
+            constraints.append(variable_dict['conditional'][i,j] >= 0)
+            conditional_array.append(variable_dict['conditional'][i,j])
         constraints.append(sum(conditional_array) == 1)
     
     # Set mean and mean 2 to be equal
@@ -159,7 +159,7 @@ def get_constraints(partitioned_set, variable_dict, data_dim, num_classes, num_e
     # Set conditional matrices to be equal
     for i in range(num_examples):
         for j in range(num_classes):
-            constraints.append(variable_dict['conditional2'][i,j]*variable_dict['inverse_conditional'][i,j] == 1)
+            constraints.append(variable_dict['conditional'][i,j]*variable_dict['inverse_conditional'][i,j] == 1)
 
     return constraints
 
