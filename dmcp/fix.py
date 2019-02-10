@@ -37,6 +37,12 @@ def fix(obj, fix_vars):
                 para.value = -abs(var.value)
             para.id = var.id
             param_list.append(para)
+        elif var.attributes['PSD'] == True:
+            para = cvx.Parameter(shape = var.shape, PSD=True)
+            if var.value is not None:
+                para.value = var.value
+            para.id = var.id
+            param_list.append(para)
         else:
             para = cvx.Parameter(shape = var.shape)
             if var.value is not None:

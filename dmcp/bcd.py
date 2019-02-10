@@ -20,6 +20,7 @@ def is_dmcp(obj):
     """
     for var in obj.variables():
         fix_var = [avar for avar in obj.variables() if not avar.id == var.id]
+        fix_var.sort(key = lambda x:x.id)
         if not fix(obj,fix_var).is_dcp():
             return False
     return True
@@ -120,7 +121,7 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
             else:
                 print("original objective value =", prob.objective.args[0].value, "status=", fixed_p.status)
         mu = min(mu*rho, mu_max) # adaptive mu
-        if np.linalg.norm(obj_pre - prob.objective.args[0].value) <= ep and max_slack<=ep: # quit
+        if np.linalg.norm(obj_pre - prob.objective.expr.value) <= ep and max_slack<=ep: # quit
             return it, max_slack
         else:
             obj_pre = prob.objective.args[0].value

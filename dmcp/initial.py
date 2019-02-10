@@ -13,10 +13,14 @@ def rand_initial(prob):
     :return:
     """
     for var in prob.variables():
-        if var.sign == "POSITIVE":
-            var.value = np.random.standard_normal(var.shape)
+        if var.sign == "NONNEGATIVE":
+            var.value = np.abs(np.random.standard_normal(var.shape))
+        elif var.attributes['PSD'] == True:
+            dummy = np.asmatrix(np.random.standard_normal(var.shape))
+            matrix = dummy.T*dummy
+            var.value = np.asarray(matrix)
         else:
-            var.value = np.random.standard_normal(var.shape)
+            var.value = -np.abs(np.random.standard_normal(var.shape))
 
 def rand_initial_proj(self, times = 1, random = 1):
     """
