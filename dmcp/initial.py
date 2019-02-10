@@ -20,7 +20,7 @@ def rand_initial(prob):
             matrix = dummy.T*dummy
             var.value = np.asarray(matrix)
         else:
-            var.value = np.abs(np.random.standard_normal(var.shape))
+            var.value = -np.abs(np.random.standard_normal(var.shape))
 
 def rand_initial_proj(self, times = 1, random = 1):
     """
