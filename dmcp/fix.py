@@ -25,28 +25,28 @@ def fix(obj, fix_vars):
     variable_list.sort(key = lambda x:x.id)
     param_list = []
     for var in variable_list:
-            if var.sign == 'NONNEGATIVE':
-                para = cvx.Parameter(shape = var.shape, nonneg=True)
-                if var.value is not None:
-                    para.value = abs(var.value)
-                para.id = var.id
-                param_list.append(para)
-            elif var.sign == 'NONPOSITIVE':
-                para = cvx.Parameter(shape = var.shape, nonpos=True)
-                if var.value is not None:
-                    para.value = -abs(var.value)
-                para.id = var.id
-                param_list.append(para)
-            elif var.attributes['PSD'] == True:
-                para = cvx.Parameter(shape = var.shape, PSD=True)
-                if var.value is not None:
-                    para.value = var.value
-                para.id = var.id
-                param_list.append(para)
-            else:
-                para = cvx.Parameter(shape = var.shape)
-                para.id = var.id
-                param_list.append(para)
+        if var.sign == 'NONNEGATIVE':
+            para = cvx.Parameter(shape = var.shape, nonneg=True)
+            if var.value is not None:
+                para.value = abs(var.value)
+            para.id = var.id
+            param_list.append(para)
+        elif var.sign == 'NONPOSITIVE':
+            para = cvx.Parameter(shape = var.shape, nonpos=True)
+            if var.value is not None:
+                para.value = -abs(var.value)
+            para.id = var.id
+            param_list.append(para)
+        elif var.attributes['PSD'] == True:
+            para = cvx.Parameter(shape = var.shape, PSD=True)
+            if var.value is not None:
+                para.value = var.value
+            para.id = var.id
+            param_list.append(para)
+        else:
+            para = cvx.Parameter(shape = var.shape)
+            para.id = var.id
+            param_list.append(para)
     
     param_list.sort(key = lambda x:x.id)
     if isinstance(obj,Expression):
