@@ -181,3 +181,5 @@ print("Precision Is_DCP", dmcp.fix(problem, fix_var2).is_dcp())
 print("Objective DMCP", dmcp.is_dmcp(objective.expr))
 print("Is Problem DMCP? ", dmcp.is_dmcp(problem))
 print("Number of variables: ", len(problem.variables()))
+
+result = problem.solve(method = 'bcd', update = 'proximal', solver=cvx.MOSEK, max_iter=100)
