@@ -25,13 +25,13 @@ def fix(obj, fix_vars):
     variable_list.sort(key = lambda x:x.id)
     param_list = []
     for var in variable_list:
-        if var.sign == 'NONNEGATIVE':
+        if var.sign == "NONNEGATIVE":
             para = cvx.Parameter(shape = var.shape, nonneg=True)
             if var.value is not None:
                 para.value = abs(var.value)
             para.id = var.id
             param_list.append(para)
-        elif var.sign == 'NONPOSITIVE':
+        elif var.sign == "NONPOSITIVE":
             para = cvx.Parameter(shape = var.shape, nonpos=True)
             if var.value is not None:
                 para.value = -abs(var.value)
