@@ -45,7 +45,8 @@ def fix(obj, fix_vars):
             param_list.append(para)
         else:
             para = cvx.Parameter(shape = var.shape)
-            para.id = var.id
+            if var.value is not None:
+                para.id = var.id
             param_list.append(para)
     
     param_list.sort(key = lambda x:x.id)
