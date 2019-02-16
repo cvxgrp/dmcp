@@ -32,6 +32,14 @@ def find_minimal_sets(prob, is_all = False):
         V.sort()
         fix_idx = [V.index(varid) for varid in fix_id]
         result.append(fix_idx)
+    
+    # TODO. Quick fix. Will fix algorithm later on
+    if result == []:
+        for var in prob.variables():
+            fix_var = [avar.id for avar in prob.variables() if not avar.id == var.id]
+            fix_var.sort()
+            result.append(fix_var)
+
     return result
 
 def find_MIS(prob, is_all):

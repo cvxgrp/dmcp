@@ -19,8 +19,10 @@ def rand_initial(prob):
             dummy = np.asmatrix(np.random.standard_normal(var.shape))
             matrix = dummy.T*dummy
             var.value = np.asarray(matrix)
-        else:
+        elif var.sign == "NONPOSITIVE":
             var.value = -np.abs(np.random.standard_normal(var.shape))
+        else:
+            var.value = np.random.standard_normal(var.shape)
 
 def rand_initial_proj(self, times = 1, random = 1):
     """
