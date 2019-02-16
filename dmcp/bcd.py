@@ -90,7 +90,6 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
     :return: it: number of iterations; max_slack: maximum slack variable
     """
     obj_pre = np.inf
-    print("Hi", fix_sets)
     for it in range(max_iter):
         np.random.shuffle(fix_sets)
         #print "======= iteration", it, "======="
@@ -111,14 +110,11 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
             # add slack variables
             fixed_p, var_slack = add_slack(fixed_p, mu)
             # proximal operator
-            print("HI HI HI HI")
             if proximal:
                 fixed_p = proximal_op(fixed_p, var_slack, lambd)
-            print("Bye Bye Bye Bye")
             # solve
             fixed_p.solve(solver = solver)
             max_slack = 0
-            print("HELLO", [var.value for var in var_slack])
             if not var_slack == []:
                 max_slack = np.max([np.max(np.abs(var.value)) for var in var_slack])
                 print("max abs slack =", max_slack, "mu =", mu, "original objective value =", prob.objective.args[0].value, "fixed objective value =",fixed_p.objective.args[0].value, "status=", fixed_p.status)
