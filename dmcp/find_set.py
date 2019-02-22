@@ -32,6 +32,14 @@ def find_minimal_sets(prob, is_all = False):
         V.sort()
         fix_idx = [V.index(varid) for varid in fix_id]
         result.append(fix_idx)
+    
+    # Already fixed.
+    #if result == [] and not prob.is_dcp() and is_dmcp(prob):
+    #    for var in prob.variables():
+    #        fix_var = [avar.id for avar in prob.variables() if not avar.id == var.id]
+    #        fix_var.sort()
+    #        result.append(fix_var)
+
     return result
 
 def find_MIS(prob, is_all):
@@ -90,6 +98,7 @@ def find_all_iset(V,g):
     :return: a list of independent subsets
     """
     subsets = find_all_subsets(V)
+    subsets.append([])
     result = []
     V_id = [var.id for var in V]
     V_id.sort()
@@ -97,9 +106,10 @@ def find_all_iset(V,g):
         subset_id = [var.id for var in subset]
         subset_id.sort()
         subset_ind = [V_id.index(i) for i in subset_id]
-        var_set_ind = [i for i in range(len(V_id))]
-        set_complement = list(set(var_set_ind).difference(set(subset_ind)))
-        if is_independent(set_complement, g) and not set_complement == []:
+        #var_set_ind = [i for i in range(len(V_id))]
+        #set_complement = list(set(var_set_ind).difference(set(subset_ind)))
+        #if is_independent(set_complement, g) and not set_complement == []:
+        if is_independent(subset_ind, g):
             result.append(subset)
     return result
 

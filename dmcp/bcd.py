@@ -116,7 +116,7 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
             fixed_p.solve(solver = solver)
             max_slack = 0
             if not var_slack == []:
-                max_slack = np.max([np.max(cvx.abs(var).value) for var in var_slack])
+                max_slack = np.max([np.max(np.abs(var.value)) for var in var_slack])
                 print("max abs slack =", max_slack, "mu =", mu, "original objective value =", prob.objective.args[0].value, "fixed objective value =",fixed_p.objective.args[0].value, "status=", fixed_p.status)
             else:
                 print("original objective value =", prob.objective.args[0].value, "status=", fixed_p.status)
@@ -212,9 +212,9 @@ def proximal_op(prob, var_slack, lambd):
         # add quadratic terms for all variables that are not slacks
         if not var.id in slack_id:
             if prob.objective.NAME == 'minimize':
-                new_cost = new_cost + cvx.square(cvx.norm(var - var.value,'fro'))/2/lambd
+                new_cost = new_cost + cvx.square(cvx.norm(cvx.vec(var - var.value), 2))/2/lambd
             else:
-                new_cost = new_cost - cvx.square(cvx.norm(var - var.value,'fro'))/2/lambd
+                new_cost = new_cost - cvx.square(cvx.norm(cvx.vec(var - var.value), 2))/2/lambd
 
     # Define proximal problem
     if prob.objective.NAME == 'minimize':
