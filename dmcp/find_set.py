@@ -6,7 +6,6 @@ __author__ = 'Xinyue'
 
 from dmcp import fix
 from dmcp import is_atom_multiconvex
-from dmcp import is_dmcp
 import numpy as np
 from cvxpy.expressions.leaf import Leaf
 from cvxpy.expressions.variable import Variable
@@ -34,7 +33,7 @@ def find_minimal_sets(prob, is_all = False):
         fix_idx = [V.index(varid) for varid in fix_id]
         result.append(fix_idx)
     
-    # TODO. Quick fix. Will fix algorithm later on
+    # Already fixed.
     #if result == [] and not prob.is_dcp() and is_dmcp(prob):
     #    for var in prob.variables():
     #        fix_var = [avar.id for avar in prob.variables() if not avar.id == var.id]
