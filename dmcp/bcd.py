@@ -212,9 +212,9 @@ def proximal_op(prob, var_slack, lambd):
         # add quadratic terms for all variables that are not slacks
         if not var.id in slack_id:
             if prob.objective.NAME == 'minimize':
-                new_cost = new_cost + cvx.square(cvx.norm(var - var.value, 2))/2/lambd
+                new_cost = new_cost + cvx.square(cvx.norm(cvx.vec(var - var.value), 2))/2/lambd
             else:
-                new_cost = new_cost - cvx.square(cvx.norm(var - var.value, 2))/2/lambd
+                new_cost = new_cost - cvx.square(cvx.norm(cvx.vec(var - var.value), 2))/2/lambd
 
     # Define proximal problem
     if prob.objective.NAME == 'minimize':
