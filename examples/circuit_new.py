@@ -17,21 +17,21 @@ z = Variable(n-1)
 i = Variable(n)
 j = Variable(n)
 
-a = NonNegative(n)
-b = NonNegative(n)
-c = NonNegative(n-1)
+a = Variable(n, nonneg=True)
+b = Variable(n, nonneg=True)
+c = Variable(n-1, nonneg=True)
 
 v = Variable(n)
 
-x.value = np.ones((n,1))
-y.value = np.ones((n,1))
-z.value = np.ones((n-1,1))
-i.value = np.ones((n,1))
-j.value = np.ones((n,1))
-a.value = np.ones((n,1))
-b.value = np.ones((n,1))
-c.value = np.ones((n-1,1))
-v.value = np.ones((n,1))
+x.value = np.ones(n)
+y.value = np.ones(n)
+z.value = np.ones(n-1)
+i.value = np.ones(n)
+j.value = np.ones(n)
+a.value = np.ones(n)
+b.value = np.ones(n)
+c.value = np.ones(n-1)
+v.value = np.ones(n)
 
 constr = [i[0] == x[0], j[0] == y[0], i[n-1] == -I0, j[n-1] == -I0]
 cost = 0
@@ -44,8 +44,8 @@ for k in range(n-1):
     constr += [j[k+1] == j[k]+y[k+1]]
 for k in range(n-2):
     constr += [x[k+1]+z[k] == y[k+1]+z[k+1]]
-constr += [mul_elemwise(x,a) == u0 - v]
-constr += [mul_elemwise(y,b) == v]
+constr += [multiply(x,a) == u0 - v]
+constr += [multiply(y,b) == v]
 #constr += [x[n-1]*a[n-1] == u0 - v[n-1]]#
 #constr += [y[n-1]*b[n-1] == v[n-1]]#
 constr += [x[0] == y[0]+z[0]]

@@ -3,14 +3,14 @@ __author__ = 'Xinyue'
 import matplotlib.pyplot as plt
 import numpy as np
 import dmcp
-from cvxpy import *
+import cvxpy as cvx
 
 np.random.seed(0)
 
 n = 100
 m = 40
-y = Variable(m)
-x = Variable(n)
+y = cvx.Variable(m)
+x = cvx.Variable(n)
 
 x0 = np.zeros((n,1))
 x0[n/2+3:n/2+4] = 1
@@ -21,8 +21,8 @@ t = np.linspace(-2,2,m)
 y0 = np.exp(-np.square(t)*2)
 d = np.convolve(np.array(x0).flatten(),np.array(y0).flatten())
 
-cost = norm(conv(y,x)-d) + 0.15*norm(x,1)
-prob = Problem(Minimize(cost), [normInf(y) <= 1])
+cost = cvx.norm(cvx.conv(y,x)-d) + 0.15*cvx.norm(x,1) # cvx.conv does not yet support variable as first argument.
+prob = cvx.Problem(cvx.Minimize(cost), [cvx.norm(y, "inf") <= 1])
 
 x.value = np.ones((n,1))
 y.value = np.ones((m,1))
@@ -33,6 +33,6 @@ plt.plot(np.array(abs(y).value).flatten(),'c-s')
 plt.plot(d,'g-')
 plt.plot(x0,'r--', linewidth = 2)
 plt.plot(y0,'m-.', linewidth = 2)
-print norm(conv(x,y)-d).value
+print cvx.norm(cvx.conv(x,y)-d).value
 plt.legend(["$x$", "$y$","$d$", "ground truth $x_0$","ground truth $y_0$"])
 plt.show()

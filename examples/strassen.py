@@ -63,7 +63,7 @@ psi.value = np.matrix([[1,1,0,0,0,0,0,0],
 obj = Minimize((norm(psi,1)+norm(phi,1)+norm(theta,1)))
 constr = []
 for i in range(p):
-    constr.append(vec(C[i]) == psi*mul_elemwise(phi*vec(A[i]), theta*vec(B[i])))
+    constr.append(vec(C[i]) == psi*multiply(phi*vec(A[i]), theta*vec(B[i])))
 prob = Problem(obj, constr)
 
 prob.solve(method = 'bcd', update = 'minimize', mu = 2, mu_max = 1e5, max_iter = 100)

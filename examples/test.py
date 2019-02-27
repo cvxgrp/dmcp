@@ -6,15 +6,15 @@ from dmcp.fix import fix
 from dmcp.find_set import find_minimal_sets
 from dmcp.bcd import is_dmcp
 
-alpha = NonNegative(1)
+alpha = Variable(nonneg=True)
 alpha.value = 1
 #x = NonNegative(1)
 #y = NonNegative(1)
 
-x = Variable(1)
-y = Variable(1)
-z = NonNegative(1)
-w = Variable(1)
+x = Variable()
+y = Variable()
+z = Variable(nonneg=True)
+w = Variable()
 
 x.value = 2.0
 y.value = 1
@@ -44,8 +44,8 @@ prob.solve(method = 'bcd', ep = 1e-4, rho = 1.1)
 
 # bisection
 print "==== bisection method ===="
-upper = Parameter(sign = 'Positive')
-lower = Parameter(sign = 'Positive')
+upper = Parameter(nonneg=True)
+lower = Parameter(nonneg=True)
 prob = Problem(Minimize(0), [square(x) +1<=(upper+lower)*sqrt(x+0.5)/float(2)])
 upper.value = 1000
 lower.value = 0

@@ -2,7 +2,7 @@ __author__ = 'Xinyue'
 
 import numpy as np
 import dmcp
-from cvxpy import *
+import cvxpy as cvx
 
 n = 5
 m1 = 5
@@ -25,17 +25,17 @@ C = np.matrix([[0.00, 0.00, 0.16, 0.00, -1.78],
      [0.00, -0.12, 0.23, -0.12, 1.14]])
 theta = 0.35
 
-P = Variable(n,n)
-K = Variable(m1,m2)
-alpha = Variable(1)
+P = cvx.Variable((n,n))
+K = cvx.Variable((m1,m2))
+alpha = cvx.Variable()
 
 P.value = np.eye(n)
 K.value = np.zeros((m1,m2))
 alpha.value = -1
 
-cost = norm(K,1)
+cost = cvx.norm(K,1)
 constr = [np.eye(n) << P, (A+B*K*C).T*P+P*(A+B*K*C) << P*alpha*2, alpha<=-theta]
-prob = Problem(Minimize(cost), constr)
+prob = cvx.Problem(cvx.Minimize(cost), constr)
 prob.solve(method = 'bcd', max_iter = 200, mu_max = 1e10, mu = 0.3)
 print "======= solution ======="
 print "objective =", cost.value
