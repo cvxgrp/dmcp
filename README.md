@@ -8,7 +8,7 @@ The full details of our approach are discussed in [the associated paper](http://
 
 Installation
 ------------
-You should first install [CVXPY 1.0](http://www.cvxpy.org/).
+You should first install [CVXPY 1.0](http://www.cvxpy.org/). Then clone the repository and run ``python setup.py install`` inside.
 
 DMCP rules
 ----------
