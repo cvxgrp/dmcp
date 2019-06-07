@@ -52,8 +52,10 @@ maximum value of slack variables: 1.15081491391e-05
 objective value: 1.74866042578e-05
 ```
 
-The solutions obtained by DMCP can depend on the initial point from which the solving algorithm starts,
-and it is suggested that users set reasonable initial values for all variables,
+The solutions obtained by DMCP can depend on the initial point.
+The algorithm starts from the values of any variables that are already specified; 
+for any that are not specified, random values are used.
+It is suggested that users set reasonable initial values for all variables,
 which can be done by manually setting the ``value`` field of the problem variables.
 For example:
 ```
@@ -63,8 +65,6 @@ x_3.value = 4
 x_4.value = 0.15
 result = myprob.solve(method = 'bcd')
 ```
-If some vairables are not given initial value by the user, then a random value is set.
-
 More examples can be found [here] (https://github.com/cvxgrp/dmcp/tree/master/examples).
 
 Multi-convex atomic functions
@@ -99,4 +99,5 @@ Solve method parameters:
 * The ``mu_max`` parameter upper bounds how large ``mu`` can get. The default is 1e4.
 * The ``lambd`` parameter is the parameter in the proximal operator. The default is 10.
 
-If the convex solver for the subproblems accepts any additional keyword arguments, then you can still set them in the ``problem.solve()`` function, and they will be passed to the convex solver.
+If the convex solver for the subproblems accepts any additional keyword arguments, 
+then the user can set them in the ``problem.solve()`` function, and they will be passed to the convex solver.
