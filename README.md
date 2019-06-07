@@ -52,10 +52,9 @@ maximum value of slack variables: 1.15081491391e-05
 objective value: 1.74866042578e-05
 ```
 
-The solutions obtained by DMCP depend heavily on the initial point the solving algorithm starts from.
-It is strongly suggested that users set reasonable initial points.
-Otherwise, the algorithm starts from a random initial point.
-Users can specify an initial point manually by setting the ``value`` field of the problem variables.
+The solutions obtained by DMCP can depend on the initial point from which the solving algorithm starts,
+and it is suggested that users set reasonable initial values for all variables,
+which can be done by manually setting the ``value`` field of the problem variables.
 For example:
 ```
 x_1.value = 1.2
@@ -64,6 +63,7 @@ x_3.value = 4
 x_4.value = 0.15
 result = myprob.solve(method = 'bcd')
 ```
+If some vairables are not given initial value by the user, then a random value is set.
 
 More examples can be found [here] (https://github.com/cvxgrp/dmcp/tree/master/examples).
 
