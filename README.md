@@ -1,16 +1,14 @@
 
 DMCP
 ====
-A multi-convex optimization problem is one in which the variables can be partitioned into sets over each of which the problem is convex when the other variables are fixed.
+A multi-convex optimization problem is one in which the variables can be partitioned into sets, over each of which the problem is convex when the other variables are fixed.
 It is generally a nonconvex problem.
-DMCP package provides methods to verify multi-convexity and to find minimal sets of variables that have to be fixed for a problem to be convex, as well as an organized heuristic for multi-convex programming.
+DMCP package provides methods to verify multi-convexity and to find minimal sets of variables that have to be fixed for the problem to be convex, as well as an organized heuristic for multi-convex programming.
 The full details of our approach are discussed in [the associated paper](http://stanford.edu/~boyd/papers/dmcp.html). DMCP is built on top of [CVXPY](http://www.cvxpy.org/), a domain-specific language for convex optimization embedded in Python.
-
-DMCP now works on CVXPY 1.0.
 
 Installation
 ------------
-You should first install [CVXPY] 1.0.
+You should first install [CVXPY 1.0](http://www.cvxpy.org/).
 
 DMCP rules
 ----------
@@ -94,12 +92,11 @@ The components of the variable, the objective, and the constraints are construct
 Additional arguments can be used to specify the parameters.
 
 Solve method parameters:
+* The ``solver`` parameter specifies what solver to use to solve convex subproblems.
 * The ``max_iter`` parameter sets the maximum number of iterations in the algorithm. The default is 100.
 * The ``mu`` parameter trades off satisfying the constraints and minimizing the objective. Larger ``mu`` favors satisfying the constraints. The default is 0.001.
 * The ``rho`` parameter sets the rate at which ``mu`` increases inside the algorithm. The default is 1.2.
 * The ``mu_max`` parameter upper bounds how large ``mu`` can get. The default is 1e4.
 * The ``lambd`` parameter is the parameter in the proximal operator. The default is 10.
-* The ``solver`` parameter specifies what solver to use to solve convex subproblems.
 
-Any additional keyword arguments will be passed to the solver for convex subproblems. For example, ``warm_start=True`` will tell the convex solver to use a warm start.
-
+If the convex solver for the subproblems accepts any additional keyword arguments, then you can still set them in the ``problem.solve()`` function, and they will be passed to the convex solver.
