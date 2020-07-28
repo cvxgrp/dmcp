@@ -9,6 +9,7 @@ from cvxpy.expressions.expression import Expression
 from cvxpy.problems.problem import Problem
 from cvxpy.expressions.variable import Variable
 from cvxpy.constraints.nonpos import NonPos, NonNeg, Inequality
+# from cvxpy.constraints.nonpos import Inequality, NonPos, NonNeg
 from cvxpy.constraints.psd import PSD
 
 
@@ -87,7 +88,7 @@ def fix_prob(prob, fix_var, param_list):
             lhs = fix_expr(con.args[0], fix_var, param_list)
             rhs = fix_expr(con.args[1], fix_var, param_list)
             new_constr.append(lhs <= rhs)
-        else:
+        else: #PSD or equality
             fix_con = fix_expr(con.expr, fix_var, param_list)
             if isinstance(con, NonPos):
                 new_constr.append(fix_con <= 0)

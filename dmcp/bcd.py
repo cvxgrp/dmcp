@@ -9,7 +9,7 @@ from dmcp import rand_initial
 from dmcp import find_minimal_sets
 from dmcp import fix
 import numpy as np
-from cvxpy.constraints.nonpos import NonPos
+from cvxpy.constraints.nonpos import NonPos, NonNeg, Inequality
 from cvxpy.constraints.zero import Zero
 from cvxpy.constraints.psd import PSD
 
@@ -113,7 +113,7 @@ def _bcd(prob, fix_sets, max_iter, solver, mu, rho, mu_max, ep, lambd, linear, p
             if proximal:
                 fixed_p = proximal_op(fixed_p, var_slack, lambd)
             # solve
-            fixed_p.solve(solver = solver)
+            fixed_p.solve(solver=solver)
             max_slack = 0
             if not var_slack == []:
                 max_slack = np.max([np.max(np.abs(var.value)) for var in var_slack])
@@ -167,8 +167,8 @@ def add_slack(prob, mu):
     var_slack = []
     new_constr = []
     for constr in prob.constraints:
-        constr_shape = constr.expr.shape
-        if isinstance(constr, NonPos):
+        constr_shape = constr.expr.shape            
+        if isinstance(constr, Inequality):
             var_slack.append(cvx.Variable(constr_shape, nonneg=True)) # NonNegative slack var
             left = constr.expr
             right = var_slack[-1]
