@@ -38,9 +38,9 @@ objective = cvx.Minimize(abs(x_1*x_2+x_3*x_4))
 constraint = [x_1+x_2+x_3+x_4 == 1]
 myprob = cvx.Problem(objective, constraint)
 
-print "minimal sets:", dmcp.find_minimal_sets(myprob)   # find all minimal sets
-print "problem is DCP:", myprob.is_dcp()   # false
-print "problem is DMCP:", dmcp.is_dmcp(myprob)  # true
+print("minimal sets:", dmcp.find_minimal_sets(myprob))   # find all minimal sets
+print("problem is DCP:", myprob.is_dcp())   # false
+print("problem is DMCP:", dmcp.is_dmcp(myprob))  # true
 result = myprob.solve(method = 'bcd')
 ```
 The output of the above code is as follows.
