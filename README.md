@@ -34,7 +34,7 @@ x_2 = cvx.Variable()
 x_3 = cvx.Variable()
 x_4 = cvx.Variable()
 
-objective = cvx.Minimize(abs(x_1*x_2+x_3*x_4))
+objective = cvx.Minimize(cvx.abs(x_1*x_2+x_3*x_4))
 constraint = [x_1+x_2+x_3+x_4 == 1]
 myprob = cvx.Problem(objective, constraint)
 
